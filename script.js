@@ -1,3 +1,14 @@
+async function getAll() {
+  const url = 'https://meteoride-im3.meteoride-im3.com/backend/api/getAll.php';
+try {
+    const response = await fetch(url);
+    const data = await response.json();
+    console.log(data); // gibt die Daten der API in der Konsole aus
+  } catch (error) {
+    console.error(error)
+  }
+}
+
 // Initialisiert das Chart.js-Liniendiagramm
 const ctx = document.getElementById('lineChart').getContext('2d');
 
@@ -26,3 +37,23 @@ new Chart(ctx, {
     }
   }
 });
+
+getAll();
+
+const datepicker =document.querySelector('#datepicker');
+datepicker.addEventListener('change', function() {
+  const date = datepicker.value;
+  getByDate(date);
+  console.log(date);
+})
+
+async function getByDate(date) {
+  const url = `https://meteoride-im3.meteoride-im3.com/backend/api/getByDate.php?date=${date}`;
+  try { 
+    const response = await fetch(url);
+    const data = await response.json();
+    console.log(data); // gibt die Daten der API in der Konsole aus
+  } catch (error) {
+    console.error(error)
+  }
+}
