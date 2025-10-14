@@ -57,3 +57,40 @@ async function getByDate(date) {
     console.error(error)
   }
 }
+
+// Funktion, um aktuelle Uhrzeit in Leipzig anzuzeigen
+function updateLeipzigTime() {
+  const timeElement = document.querySelector('.time');
+
+  // Aktuelle Zeit für Zeitzone "Europe/Berlin" (Leipzig)
+  const now = new Date().toLocaleTimeString('de-DE', {
+    timeZone: 'Europe/Berlin',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit'
+  });
+
+  timeElement.textContent = now;
+}
+
+// Beim Laden der Seite sofort ausführen
+updateLeipzigTime();
+
+// Jede Sekunde neu aktualisieren
+setInterval(updateLeipzigTime, 1000);
+
+function uhrzeit() {
+    var jetzt = new Date(),
+        h = jetzt.getHours(),
+        m = jetzt.getMinutes(),
+        s = jetzt.getSeconds();
+    m = fuehrendeNull(m);
+    s = fuehrendeNull(s);
+    document.getElementById('uhr').innerHTML = h + ':' + m + ':' + s;
+    setTimeout(uhrzeit, 500);
+  }
+  
+  function fuehrendeNull(zahl) {
+    zahl = (zahl < 10 ? '0' : '' )+ zahl;  
+    return zahl;
+  }
