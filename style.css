@@ -1,0 +1,112 @@
+/* ======= BASIS ======= */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Poppins", sans-serif;
+  background-color: #a8c6ff; /* hellblau */
+  color: white;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+/* Standort-Button */
+.location-btn {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: translate(30px, 30px);
+  background-color: #a8c6ff;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 8px 14px;
+  font-size: 15px;
+  cursor: pointer;
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  transition: background-color 0.3s;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px; /* Abstand zwischen Icon und Text */
+}
+
+.location-btn .icon {
+  width: 20px;  /* Breite des Icons */
+  height: 20px; /* Höhe des Icons */
+}
+
+.location-btn:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Titel & Text */
+.title {
+  font-size: 48px;
+  margin: 40px 0 20px;
+  text-align: center;
+  font-weight: 300;
+}
+
+/* Titel Hover-Effekt */
+.title span {
+  display: inline-block; /* wichtig für Transformation */
+  transition: transform 0.3s ease; /* sanfte Animation */
+}
+
+.title span:hover {
+  transform: scale(1.1); /* vergrößert den Titel um 10% */
+}
+
+.description {
+  font-size: 16px;
+  line-height: 1.6;
+  color: #f8f8f8;
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+.chart-container {
+  width: 90%;
+  max-width: 800px;
+  margin: 20px auto 0;
+}
+
+/* Canvas soll die volle Breite des Containers einnehmen und eine feste Höhe haben */
+#chart {
+  width: 100%;
+  height: 300px; /* gewünschte Höhe */
+  display: block; /* verhindert unnötige Leerzeichen */
+  margin-top: 40px; /* optional Abstand nach oben */
+}
+
+.street {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 80px;
+  background-color: #003366; /* dunkelblau */
+  z-index: -1; /* damit es hinter dem Inhalt bleibt */
+}
+
+.road-stripes {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: repeating-linear-gradient(
+    to right,
+    white,
+    white 20px,
+    transparent 20px,
+    transparent 40px
+  );
+  transform: translateY(-50%);
+}

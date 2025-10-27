@@ -10,7 +10,8 @@ try {
 }
 
 // Initialisiert das Chart.js-Liniendiagramm
-const ctx = document.getElementById('lineChart').getContext('2d');
+const canvas = document.querySelector('#chart');
+const ctx = canvas.getContext('2d');
 
 new Chart(ctx, {
   type: 'line',
@@ -38,15 +39,6 @@ new Chart(ctx, {
   }
 });
 
-getAll();
-
-const datepicker =document.querySelector('#datepicker');
-datepicker.addEventListener('change', function() {
-  const date = datepicker.value;
-  getByDate(date);
-  console.log(date);
-})
-
 async function getByDate(date) {
   const url = `https://meteoride-im3.meteoride-im3.com/backend/api/getByDate.php?date=${date}`;
   try { 
@@ -58,39 +50,36 @@ async function getByDate(date) {
   }
 }
 
-// Funktion, um aktuelle Uhrzeit in Leipzig anzuzeigen
-function updateLeipzigTime() {
-  const timeElement = document.querySelector('.time');
-
-  // Aktuelle Zeit für Zeitzone "Europe/Berlin" (Leipzig)
-  const now = new Date().toLocaleTimeString('de-DE', {
-    timeZone: 'Europe/Berlin',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit'
-  });
-
-  timeElement.textContent = now;
+function getBy3Days() {
+    const url = `https://meteoride-im3.meteoride-im3.com/backend/api/getBy3Days.php`;
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error(error)
+    }
 }
 
-// Beim Laden der Seite sofort ausführen
-updateLeipzigTime();
+const date_picker = document.querySelector('#datepicker');
+let chart = null;
 
-// Jede Sekunde neu aktualisieren
-setInterval(updateLeipzigTime, 1000);
 
-function uhrzeit() {
-    var jetzt = new Date(),
-        h = jetzt.getHours(),
-        m = jetzt.getMinutes(),
-        s = jetzt.getSeconds();
-    m = fuehrendeNull(m);
-    s = fuehrendeNull(s);
-    document.getElementById('uhr').innerHTML = h + ':' + m + ':' + s;
-    setTimeout(uhrzeit, 500);
-  }
-  
-  function fuehrendeNull(zahl) {
-    zahl = (zahl < 10 ? '0' : '' )+ zahl;  
-    return zahl;
-  }
+date_picker.addEventListener('input', async function() {
+    // -> chart löschen, wenn schon vorhanden
+    if (chart) {
+        chart.destroy()
+    }
+
+    // -> daten laden
+    const date = date_picker.value;
+    const data = await getByDate(date);
+
+    // -> daten aufbereiten
+    const labels = data.map((entry) => {
+        const date = new Date(entry.timestamp);
+        return `${date.getHours()} Uhr`;
+    })
+    const numbers = data.map((entry) => {
+        return entry.passengers;
+    })
