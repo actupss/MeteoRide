@@ -1,35 +1,36 @@
 <!DOCTYPE html>
 <html lang="de">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>MeteoRide</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-    <button class="location-btn">
-    <img src="images/Standort.png" alt="Leipzig Icon" class="icon">
-    Leipzig
-    </button>
-    <h1 class="title"><span>MeteoRide</span></h1>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MeteoRide</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="page">
+      <button class="location-btn">
+        <img src="images/Standort.png" alt="Leipzig Icon" class="icon" />
+        <span> Leipzig </span>
+      </button>
+      <h1 class="title"><span>MeteoRide</span></h1>
+      <p class="description">
+        In Leipzig greifen viele Menschen auf das Fahrradleihsystem Nextbike
+        zurück. Doch wie sehr beeinflussen Sonne, Regen und Schnee ihre
+        Entscheidung? MeteoRide verbindet Ausleihzahlen mit Wetterdaten und
+        macht sichtbar, wann die Leipziger:innen am liebsten radeln.
+      </p>
 
-    <p class="description">
-      In Leipzig greifen viele Menschen auf das Fahrradleihsystem Nextbike zurück.
-      Doch wie sehr beeinflussen Sonne, Regen und Schnee ihre Entscheidung?
-      MeteoRide verbindet Ausleihzahlen mit Wetterdaten und macht sichtbar,
-      wann die Leipziger:innen am liebsten radeln.
-    </p>
+      <main class="main-content">
+        <div class="chart-container">
+          <canvas id="chart"></canvas>
+        </div>
+      </main>
 
-    <div class="chart-container">
-    <canvas id="chart"></canvas>
-    <input type="date" name="datepicker" id="datepicker">
-    </div>
-
-    <div class="street">
+      <div class="street">
         <div class="road-stripes"></div>
+      </div>
     </div>
-
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="script.js"></script>
-</body>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="script.js"></script>
+  </body>
 </html>
