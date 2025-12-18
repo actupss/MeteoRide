@@ -8,10 +8,21 @@
   </head>
   <body>
     <div class="page">
-      <button class="location-btn">
+      <button id="leipzigBtn" class="location-btn">
         <img src="images/Standort.png" alt="Leipzig Icon" class="icon" />
         <span> Leipzig </span>
       </button>
+      <div id="mapsOverlay" class="maps-overlay">
+        <div class="maps-container">
+          <iframe id="mapsFrame" src="" frameborder="0"></iframe>
+          <button id="returnBtn" class="return-btn">
+            <img
+              src="images/Grafen-Return Button.png"
+              alt="Grafen Return Button"
+            />
+          </button>
+        </div>
+      </div>
       <h1 class="title"><span>MeteoRide</span></h1>
       <p class="description">
         In Leipzig greifen viele Menschen auf das Fahrradleihsystem Nextbike
