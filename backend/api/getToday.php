@@ -1,10 +1,9 @@
 <?php
+// -> json aktivieren
+header('Content-Type: application/json');
 
 // -> daten als json laden
 require_once('../config.php');
-
-// -> json aktivieren
-header('Content-Type: application/json');
 
 // -> verbindung mit der datenbank
 try {
