@@ -72,11 +72,13 @@ body {
   opacity: 0;
   visibility: hidden;
   transition: all 0.4s ease;
+  pointer-events: none;
 }
 
 .maps-overlay.active {
   opacity: 1;
   visibility: visible;
+  pointer-events: auto;
 }
 
 .maps-container {
@@ -100,6 +102,11 @@ body {
   justify-content: center;
   align-items: center;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  position: absolute;
+  bottom: 30px;
+  right: 30px;
+  width: 140px;
+  height: 90px;
 }
 
 .return-btn img {
