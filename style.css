@@ -1,4 +1,3 @@
-/* ======= BASIS ======= */
 * {
   box-sizing: border-box;
 }
@@ -11,24 +10,14 @@ body {
 body {
   margin: 0;
   font-family: "Poppins", sans-serif;
-  background-color: #a8c6ff; /* hellblau */
+  background-color: #a8c6ff;
   color: white;
 }
-
-/*min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start; */
 
 .page {
   min-height: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
-}
-
-.main-content {
-  flex: 1;
 }
 
 /* Standort-Button */
@@ -47,26 +36,22 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  transition: background-color 0.3s;
-  gap: 8px; /* Abstand zwischen Icon und Text */
+  gap: 8px;
 }
 
 .location-btn .icon {
-  width: 35px; /* Breite des Icons */
-  height: 35px; /* Höhe des Icons */
+  width: 35px;
+  height: 35px;
 }
 
 .location-btn:hover {
   background-color: rgba(255, 255, 255, 0.3);
 }
 
-/* Google Maps und Return Buttons */
+/* Maps-Overlay */
 .maps-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  inset: 0;
   background: rgba(0, 0, 0, 0.9);
   z-index: 9999;
   opacity: 0;
@@ -101,23 +86,11 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
   position: absolute;
   bottom: 30px;
   right: 30px;
   width: 140px;
   height: 90px;
-}
-
-.return-btn img {
-  max-width: 100%;
-  height: auto;
-  display: block;
-}
-
-.return-btn:hover {
-  transform: scale(1.03);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
 }
 
 /* Titel & Text */
@@ -128,14 +101,13 @@ body {
   font-weight: 350;
 }
 
-/* Titel Hover-Effekt */
 .title span {
-  display: inline-block; /* wichtig für Transformation */
-  transition: transform 0.3s ease; /* sanfte Animation */
+  display: inline-block;
+  transition: transform 0.3s ease;
 }
 
 .title span:hover {
-  transform: scale(1.1); /* vergrößert den Titel um 10% */
+  transform: scale(1.1);
 }
 
 .description {
@@ -147,31 +119,29 @@ body {
   text-align: center;
 }
 
+/* Chart */
 .chart-container {
   width: 90%;
   max-width: 800px;
   margin: 20px auto 0;
   position: relative;
   height: 250px;
-  transition: transform 0.3s ease;
+  transition: transform 0.3s ease, opacity 0.3s ease;
 }
 
-/* Canvas soll die volle Breite des Containers einnehmen und eine feste Höhe haben */
 #chart {
   width: 100%;
-  height: 100%; /* gewünschte Höhe */
-  display: block; /* verhindert unnötige Leerzeichen */
-  margin-top: 0; /* optional Abstand nach oben */
+  height: 100%;
+  display: block;
 }
 
+/* Straße */
 .street {
   position: relative;
-  bottom: 0;
-  left: 0;
   width: 100%;
   height: 80px;
-  background-color: #003366; /* dunkelblau */
-  z-index: 0; /* damit es hinter dem Inhalt bleibt */
+  background-color: #003366;
+  margin-top: 40px;
 }
 
 .road-stripes {
@@ -188,4 +158,94 @@ body {
     transparent 40px
   );
   transform: translateY(-50%);
+}
+
+/* Bike-Slider */
+#bikeSlider {
+  position: absolute;
+  left: 50%;
+  bottom: 10px;
+  transform: translateX(-50%);
+  width: 200px;
+  height: 60px;
+  cursor: pointer;
+}
+
+/* Velo */
+.bike {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.bike-wheel {
+  position: absolute;
+  bottom: 0;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 3px solid #000;
+  background: transparent;
+}
+
+.bike-wheel.left {
+  left: 0;
+}
+
+.bike-wheel.right {
+  left: 40px;
+}
+
+.bike-frame {
+  position: absolute;
+  bottom: 12px;
+  left: 8px;
+  width: 40px;
+  height: 18px;
+  border-bottom: 3px solid #000;
+  border-left: 3px solid #000;
+  border-right: 3px solid #000;
+  transform: skewX(-15deg);
+}
+
+.bike-handle {
+  position: absolute;
+  bottom: 30px;
+  left: 42px;
+  width: 18px;
+  height: 3px;
+  background: #000;
+  border-radius: 2px;
+}
+
+/* Aktuelle Uhrzeit */
+.time-box {
+  position: absolute;
+  top: 250px;          /* nach Bedarf anpassen */
+  right: 80px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #ffffff;
+}
+
+.time-value {
+  font-size: 70px;
+  font-weight: 300;
+  letter-spacing: 2px;
+}
+
+/* Linie zwischen Zeit und Text */
+.time-line {
+  margin-top: 8px;
+  width: 100%;
+  height: 2px;
+  background-color: #ffffff;
+}
+
+.time-label {
+  margin-top: 10px;
+  font-size: 24px;
+  font-weight: 300;
 }

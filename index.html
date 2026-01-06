@@ -10,7 +10,7 @@
     <div class="page">
       <button id="leipzigBtn" class="location-btn">
         <img src="images/Standort.png" alt="Leipzig Icon" class="icon" />
-        <span> Leipzig </span>
+        <span>Leipzig</span>
       </button>
 
       <div id="mapsOverlay" class="maps-overlay">
@@ -24,6 +24,7 @@
           </button>
         </div>
       </div>
+
       <h1 class="title"><span>MeteoRide</span></h1>
       <p class="description">
         In Leipzig greifen viele Menschen auf das Fahrradleihsystem Nextbike
@@ -38,10 +39,27 @@
         </div>
       </main>
 
+      <!-- Straße + Velo -->
       <div class="street">
         <div class="road-stripes"></div>
+
+        <div id="bikeSlider">
+          <div class="bike">
+            <div class="bike-wheel left"></div>
+            <div class="bike-wheel right"></div>
+            <div class="bike-frame"></div>
+            <div class="bike-handle"></div>
+          </div>
+        </div>
       </div>
     </div>
+
+   <div class="time-box">
+  <span class="time-value" id="currentTime">15:54</span>
+  <span class="time-line"></span>
+  <span class="time-label">Aktuelle Uhrzeit</span>
+</div>
+
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="script.js"></script>
   </body>
