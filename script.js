@@ -8,6 +8,89 @@ let rainData = [];
 let startIndex = 0;
 const WINDOW_SIZE = 4; // immer 4 Tage sichtbar
 
+// ---- Elemente für Velo / Track ----
+const bikeTrack = document.getElementById("bikeTrack");
+const bike = document.querySelector(".bike");
+const chartBox = document.querySelector(".chart-container");
+
+let isDragging = false;
+let dragStartX = 0;
+let bikeStartLeft = 0;
+
+// Track an Chart-Breite anpassen
+function updateBikeTrackLayout() {
+  if (!chartBox || !bikeTrack) return;
+  const rect = chartBox.getBoundingClientRect();
+  bikeTrack.style.left = rect.left + "px";
+  bikeTrack.style.width = rect.width + "px";
+}
+
+// Velo-Position aus startIndex ableiten
+function positionFromStartIndex() {
+  const total = labels.length;
+  if (!bike || !bikeTrack || total <= WINDOW_SIZE) return;
+
+  const maxStart = total - WINDOW_SIZE;
+  const ratio = maxStart > 0 ? startIndex / maxStart : 0; // 0..1
+  const trackWidth = bikeTrack.clientWidth || 0;
+  const bikeWidth = 60;
+  const maxOffset = Math.max(trackWidth - bikeWidth, 0);
+  const px = ratio * maxOffset;
+  bike.style.left = `${px}px`;
+}
+
+// startIndex aus Pixel-Position berechnen
+function startIndexFromPosition(px) {
+  const total = labels.length;
+  if (total <= WINDOW_SIZE) return 0;
+
+  const maxStart = total - WINDOW_SIZE;
+  const trackWidth = bikeTrack.clientWidth || 0;
+  const bikeWidth = 60;
+  const maxOffset = Math.max(trackWidth - bikeWidth, 1);
+
+  const ratio = Math.min(Math.max(px / maxOffset, 0), 1);
+  return Math.round(ratio * maxStart);
+}
+
+// ---- Drag Events fürs Velo ----
+if (bike && bikeTrack) {
+  bike.addEventListener("mousedown", (e) => {
+    isDragging = true;
+    dragStartX = e.clientX;
+    bikeStartLeft = parseFloat(getComputedStyle(bike).left) || 0;
+    document.body.style.userSelect = "none";
+  });
+
+  document.addEventListener("mousemove", (e) => {
+    if (!isDragging) return;
+
+    const dx = e.clientX - dragStartX;
+    const trackWidth = bikeTrack.clientWidth || 0;
+    const bikeWidth = 60;
+    const maxOffset = Math.max(trackWidth - bikeWidth, 0);
+
+    let newLeft = bikeStartLeft + dx;
+    newLeft = Math.max(0, Math.min(maxOffset, newLeft));
+    bike.style.left = `${newLeft}px`;
+
+    const newStart = startIndexFromPosition(newLeft);
+    if (newStart !== startIndex) {
+      startIndex = newStart;
+      const end = Math.min(startIndex + WINDOW_SIZE, labels.length);
+      chart.data.labels = labels.slice(startIndex, end);
+      chart.data.datasets[0].data = bikesData.slice(startIndex, end);
+      chart.data.datasets[1].data = tempData.slice(startIndex, end);
+      chart.update();
+    }
+  });
+
+  document.addEventListener("mouseup", () => {
+    if (!isDragging) return;
+    isDragging = false;
+    document.body.style.userSelect = "";
+  });
+}
 
 // ---- Daten aus getAll.php holen und vorbereiten ----
 async function getAll() {
@@ -38,8 +121,7 @@ async function getAll() {
       const maxBikes = Math.max(...day.bikes);
       const avgTemp =
         day.temps.reduce((sum, t) => sum + t, 0) / day.temps.length;
-      const avgRain =
-        day.rain.reduce((sum, r) => sum + r, 0) / day.rain.length;
+      const avgRain = day.rain.reduce((sum, r) => sum + r, 0) / day.rain.length;
 
       const d = new Date(date);
       const dd = String(d.getDate()).padStart(2, "0");
@@ -55,7 +137,6 @@ async function getAll() {
     console.error(error);
   }
 }
-
 
 // ---- Chart.js-Initialisierung mit Fenster von 4 Tagen ----
 const canvas = document.querySelector("#chart");
@@ -101,8 +182,79 @@ async function initChart() {
     startIndex = 0;
   }
 
-  const bikeSlider = document.getElementById("bikeSlider");
+  /*const bikeTrack = document.getElementById("bikeTrack");
 
+  const bike = document.querySelector(".bike");
+
+  let isDragging = false;
+  let dragStartX = 0;
+  let bikeStartLeft = 0;
+
+  function positionFromStartIndex() {
+    const total = labels.length;
+    if (!bike || total <= WINDOW_SIZE) return;
+
+    const maxStart = total - WINDOW_SIZE;
+    const ratio = startIndex / maxStart; // 0..1
+    const sliderWidth = bikeSlider.clientWidth;
+    const bikeWidth = 60; // geschätzt
+    const maxOffset = sliderWidth - bikeWidth;
+    const px = ratio * maxOffset;
+    bike.style.left = `${px}px`;
+  }
+
+  function startIndexFromPosition(px) {
+    const total = labels.length;
+    if (total <= WINDOW_SIZE) return 0;
+
+    const maxStart = total - WINDOW_SIZE;
+    const sliderWidth = bikeSlider.clientWidth;
+    const bikeWidth = 60;
+    const maxOffset = sliderWidth - bikeWidth;
+
+    const ratio = Math.min(Math.max(px / maxOffset, 0), 1);
+    return Math.round(ratio * maxStart);
+  }
+
+  // ---- Drag Events ----
+  bike.addEventListener("mousedown", (e) => {
+    isDragging = true;
+    dragStartX = e.clientX;
+    bikeStartLeft = parseFloat(getComputedStyle(bike).left) || 0;
+    document.body.style.userSelect = "none";
+  });
+
+  document.addEventListener("mousemove", (e) => {
+    if (!isDragging) return;
+
+    const dx = e.clientX - dragStartX;
+    const sliderWidth = bikeSlider.clientWidth;
+    const bikeWidth = 60;
+    const maxOffset = sliderWidth - bikeWidth;
+
+    let newLeft = bikeStartLeft + dx;
+    newLeft = Math.max(0, Math.min(maxOffset, newLeft));
+    bike.style.left = `${newLeft}px`;
+
+    // Chart‑Fenster passend verschieben
+    const newStart = startIndexFromPosition(newLeft);
+    if (newStart !== startIndex) {
+      startIndex = newStart;
+      const end = Math.min(startIndex + WINDOW_SIZE, labels.length);
+      chart.data.labels = labels.slice(startIndex, end);
+      chart.data.datasets[0].data = bikesData.slice(startIndex, end);
+      chart.data.datasets[1].data = tempData.slice(startIndex, end);
+      chart.update();
+    }
+  });
+
+  document.addEventListener("mouseup", () => {
+    if (!isDragging) return;
+    isDragging = false;
+    document.body.style.userSelect = "";
+  });*/
+
+  /*
 bikeSlider.addEventListener("click", (event) => {
   const rect = bikeSlider.getBoundingClientRect();
   const x = event.clientX - rect.left;
@@ -112,7 +264,7 @@ bikeSlider.addEventListener("click", (event) => {
   } else {
     updateChartWindow("left");  // nach rechts fahren → neuere Tage
   }
-});
+}); */
 
   const win = getWindow();
 
@@ -169,10 +321,17 @@ bikeSlider.addEventListener("click", (event) => {
       },
     },
   });
+
+  updateBikeTrackLayout();
+  positionFromStartIndex();
 }
 
 initChart();
 
+window.addEventListener("resize", () => {
+  updateBikeTrackLayout();
+  positionFromStartIndex();
+});
 
 // ---- Weitere API-Funktionen (falls später gebraucht) ----
 async function getByDate(date) {
@@ -198,7 +357,6 @@ async function getBy3Days() {
     console.error(error);
   }
 }
-
 
 // ---- Verlinkung Google Maps Leipzig ----
 const leipzigBtn = document.getElementById("leipzigBtn");
