@@ -17,10 +17,13 @@ let isDragging = false;
 let dragStartX = 0;
 let bikeStartLeft = 0;
 
-// Elemente der Info-Card
+// Info-Card
+const infoCard = document.getElementById("infoCard");
 const infoTempValue = document.getElementById("infoTempValue");
 const infoRainValue = document.getElementById("infoRainValue");
 const infoBikesValue = document.getElementById("infoBikesValue");
+
+let todayIndex = null;
 
 // Track an Chart-Breite anpassen
 function updateBikeTrackLayout() {
@@ -103,6 +106,7 @@ if (bike && bikeTrack) {
       chart.data.datasets[0].data = bikesData.slice(startIndex, end);
       chart.data.datasets[1].data = tempData.slice(startIndex, end);
       chart.update();
+      positionInfoCard();
     }
   });
 
@@ -122,7 +126,7 @@ async function getAll() {
 
     const byDate = {};
     rawData.forEach((row) => {
-      const date = row.timestamp.slice(0, 10);
+      const date = row.timestamp.slice(0, 10); // YYYY-MM-DD
       if (!byDate[date]) {
         byDate[date] = { temps: [], bikes: [], rain: [] };
       }
@@ -155,6 +159,13 @@ async function getAll() {
       tempData.push(Number(avgTemp.toFixed(1)));
       rainData.push(Number(avgRain.toFixed(1)));
     });
+
+    // Index von heute finden
+    const today = new Date();
+    const todayStr = `${String(today.getDate()).padStart(2, "0")}.${String(
+      today.getMonth() + 1
+    ).padStart(2, "0")}.${String(today.getFullYear()).slice(-2)}`;
+    todayIndex = labels.indexOf(todayStr);
   } catch (error) {
     console.error(error);
   }
@@ -190,6 +201,7 @@ function updateChartWindow(direction) {
   chart.data.datasets[0].data = bikesData.slice(startIndex, end);
   chart.data.datasets[1].data = tempData.slice(startIndex, end);
   chart.update();
+  positionInfoCard();
 }
 
 // Info-Card mit aktuellsten Werten füllen
@@ -217,6 +229,45 @@ function updateInfoCardWithLatest() {
 
   infoBikesValue.textContent =
     typeof latestBikes === "number" ? latestBikes : "--";
+}
+
+// Info-Card horizontal auf heutigen Tag setzen
+function positionInfoCard() {
+  if (!infoCard || labels.length === 0 || !chartBox) return;
+
+  // Index: heute oder letzter Tag
+  const index =
+    todayIndex !== null && todayIndex !== -1
+      ? todayIndex
+      : labels.length - 1;
+
+  // sicherstellen, dass Fenster den Index enthält
+  const endCurrent = Math.min(startIndex + WINDOW_SIZE, labels.length);
+  if (index < startIndex || index >= endCurrent) {
+    if (labels.length > WINDOW_SIZE) {
+      startIndex = Math.max(
+        0,
+        Math.min(index - (WINDOW_SIZE - 1), labels.length - WINDOW_SIZE)
+      );
+      const end = Math.min(startIndex + WINDOW_SIZE, labels.length);
+      chart.data.labels = labels.slice(startIndex, end);
+      chart.data.datasets[0].data = bikesData.slice(startIndex, end);
+      chart.data.datasets[1].data = tempData.slice(startIndex, end);
+      chart.update();
+    } else {
+      startIndex = 0;
+    }
+  }
+
+  const containerWidth = chartBox.clientWidth || 0;
+  const visibleCount = Math.min(WINDOW_SIZE, labels.length);
+  const steps = Math.max(visibleCount - 1, 1);
+  const slot = index - startIndex; // 0..visibleCount-1
+  const stepPx = containerWidth / steps;
+  const x = slot * stepPx;
+
+  infoCard.style.left = `${x}px`;
+  infoCard.style.transform = "translateX(-50%)";
 }
 
 async function initChart() {
@@ -287,6 +338,7 @@ async function initChart() {
   updateBikeTrackLayout();
   positionFromStartIndex();
   updateInfoCardWithLatest();
+  positionInfoCard();
 }
 
 initChart();
@@ -294,6 +346,7 @@ initChart();
 window.addEventListener("resize", () => {
   updateBikeTrackLayout();
   positionFromStartIndex();
+  positionInfoCard();
 });
 
 // ---- Weitere API-Funktionen (optional) ----

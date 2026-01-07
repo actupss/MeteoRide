@@ -140,20 +140,12 @@ body {
 }
 
 /* Chart + Info-Card */
-.chart-and-card {
-  width: 90%;
-  max-width: 900px;
-  margin: 20px auto 0;
-  display: flex;
-  gap: 24px;
-  align-items: center;
-}
-
 .chart-container {
-  flex: 1 1 auto;
-  position: relative;
-  height: 250px;
-  transition: transform 0.3s ease, opacity 0.3s ease;
+  width: 90%;
+  max-width: 800px;
+  margin: 20px auto 0;
+  position: relative; /* wichtig für Info-Card */
+  height: 300px;
 }
 
 #chart {
@@ -162,9 +154,12 @@ body {
   display: block;
 }
 
-/* Info-Card */
+/* Info-Card ("gelber Balken") */
 .info-card {
-  flex: 0 0 220px;
+  position: absolute;
+  bottom: 40px; 
+  left: 50%; /* wird per JS angepasst */
+  transform: translateX(-50%);
   background-color: #fff8e8;
   border-radius: 32px;
   padding: 24px 24px 28px;
@@ -173,6 +168,7 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  min-width: 200px;
 }
 
 .info-top {
