@@ -157,7 +157,7 @@ body {
 /* Karten-Basis */
 .info-card {
   position: absolute;
-  bottom: -40px;
+  bottom: 30px;
   transform: translateX(-50%);
   border-radius: 32px;
   padding: 24px 24px 28px;
