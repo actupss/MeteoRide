@@ -11,7 +11,7 @@ body {
 body {
   margin: 0;
   font-family: "Poppins", sans-serif;
-  background-color: #a8c6ff; /* hellblau */
+  background-color: #a8c6ff;
   color: white;
   position: relative;
 }
@@ -139,12 +139,12 @@ body {
   align-items: center;
 }
 
-/* Chart + Info-Card */
+/* Chart + Info-Cards */
 .chart-container {
   width: 90%;
   max-width: 800px;
   margin: 20px auto 0;
-  position: relative; /* wichtig für Info-Card */
+  position: relative;
   height: 300px;
 }
 
@@ -154,13 +154,11 @@ body {
   display: block;
 }
 
-/* Info-Card ("gelber Balken") */
+/* Basis für beide Cards */
 .info-card {
   position: absolute;
-  bottom: 40px; 
-  left: 50%; /* wird per JS angepasst */
+  bottom: -40px;
   transform: translateX(-50%);
-  background-color: #fff8e8;
   border-radius: 32px;
   padding: 24px 24px 28px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
@@ -171,6 +169,19 @@ body {
   min-width: 200px;
 }
 
+/* Gelb: Heute */
+.today-card {
+  background-color: #fff8e8;
+  left: 50%; /* wird per JS exakt gesetzt */
+}
+
+/* Blau: Datum unter Velo */
+.bike-card {
+  background-color: #e0f0ff;
+  left: 50%; /* wird per JS exakt gesetzt */
+}
+
+/* Inhalt Cards */
 .info-top {
   display: flex;
   flex-direction: column;
@@ -196,7 +207,7 @@ body {
   gap: 4px;
 }
 
-.info-middle #infoBikesValue {
+.info-middle span:first-child {
   font-size: 32px;
   font-weight: 700;
 }
@@ -236,9 +247,9 @@ body {
   position: absolute;
   left: 0;
   right: 0;
-  bottom: 80px; /* Höhe der Straße */
-  height: 60px; /* Spurhöhe */
-  pointer-events: none; /* Maus soll nur das Velo greifen */
+  bottom: 80px;
+  height: 60px;
+  pointer-events: none;
 }
 
 /* Velo */

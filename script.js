@@ -6,9 +6,9 @@ let bikesData = [];
 let tempData = [];
 let rainData = [];
 let startIndex = 0;
-const WINDOW_SIZE = 4; // immer 4 Tage sichtbar
+const WINDOW_SIZE = 4;
 
-// Elemente für Velo / Track
+// Velo / Track
 const bikeTrack = document.getElementById("bikeTrack");
 const bike = document.querySelector(".bike");
 const chartBox = document.querySelector(".chart-container");
@@ -17,13 +17,18 @@ let isDragging = false;
 let dragStartX = 0;
 let bikeStartLeft = 0;
 
-// Info-Card
-const infoCard = document.getElementById("infoCard");
-const infoTempValue = document.getElementById("infoTempValue");
-const infoRainValue = document.getElementById("infoRainValue");
-const infoBikesValue = document.getElementById("infoBikesValue");
+// Cards
+const todayCard = document.getElementById("todayCard");
+const todayTempValue = document.getElementById("todayTempValue");
+const todayRainValue = document.getElementById("todayRainValue");
+const todayBikesValue = document.getElementById("todayBikesValue");
 
-let todayIndex = null;
+const bikeCard = document.getElementById("bikeCard");
+const bikeTempValue = document.getElementById("bikeTempValue");
+const bikeRainValue = document.getElementById("bikeRainValue");
+const bikeBikesValue = document.getElementById("bikeBikesValue");
+
+let todayIndex = null; // Index von heute
 
 // Track an Chart-Breite anpassen
 function updateBikeTrackLayout() {
@@ -44,10 +49,10 @@ function positionFromStartIndex() {
 
   let slotIndex;
   if (total > WINDOW_SIZE) {
-    const base = labels.length - WINDOW_SIZE; // Startindex der letzten 4 Tage
-    slotIndex = startIndex - base; // 0..3
+    const base = labels.length - WINDOW_SIZE;
+    slotIndex = startIndex - base;
   } else {
-    slotIndex = startIndex; // 0..(total-1)
+    slotIndex = startIndex;
   }
 
   const steps = Math.max(WINDOW_SIZE - 1, 1);
@@ -57,7 +62,7 @@ function positionFromStartIndex() {
   bike.style.left = `${px}px`;
 }
 
-// startIndex aus Pixel-Position des Velos berechnen
+// startIndex aus Pixel-Position
 function startIndexFromPosition(px) {
   const total = labels.length;
   if (total === 0) return 0;
@@ -67,17 +72,17 @@ function startIndexFromPosition(px) {
   const usableWidth = Math.max(trackWidth - bikeWidth, 1);
 
   const ratio = Math.min(Math.max(px / usableWidth, 0), 1);
-  const slot = Math.round(ratio * (WINDOW_SIZE - 1)); // 0..3
+  const slot = Math.round(ratio * (WINDOW_SIZE - 1));
 
   if (total > WINDOW_SIZE) {
     const base = labels.length - WINDOW_SIZE;
-    return base + slot; // globaler Index
+    return base + slot;
   } else {
     return Math.min(slot, total - 1);
   }
 }
 
-// ---- Drag Events fürs Velo ----
+// ---- Drag fürs Velo ----
 if (bike && bikeTrack) {
   bike.addEventListener("mousedown", (e) => {
     isDragging = true;
@@ -106,7 +111,7 @@ if (bike && bikeTrack) {
       chart.data.datasets[0].data = bikesData.slice(startIndex, end);
       chart.data.datasets[1].data = tempData.slice(startIndex, end);
       chart.update();
-      positionInfoCard();
+      updateBikeCardFromBikePosition();
     }
   });
 
@@ -117,7 +122,7 @@ if (bike && bikeTrack) {
   });
 }
 
-// ---- Daten aus getAll.php holen und vorbereiten ----
+// ---- Daten aus getAll.php holen ----
 async function getAll() {
   const url = "https://meteoride-im3.meteoride-im3.com/backend/api/getAll.php";
   try {
@@ -126,7 +131,7 @@ async function getAll() {
 
     const byDate = {};
     rawData.forEach((row) => {
-      const date = row.timestamp.slice(0, 10); // YYYY-MM-DD
+      const date = row.timestamp.slice(0, 10);
       if (!byDate[date]) {
         byDate[date] = { temps: [], bikes: [], rain: [] };
       }
@@ -160,7 +165,7 @@ async function getAll() {
       rainData.push(Number(avgRain.toFixed(1)));
     });
 
-    // Index von heute finden
+    // Index von heute
     const today = new Date();
     const todayStr = `${String(today.getDate()).padStart(2, "0")}.${String(
       today.getMonth() + 1
@@ -171,7 +176,7 @@ async function getAll() {
   }
 }
 
-// ---- Chart.js-Initialisierung ----
+// ---- Chart.js ----
 const canvas = document.querySelector("#chart");
 const ctx = canvas.getContext("2d");
 
@@ -201,53 +206,53 @@ function updateChartWindow(direction) {
   chart.data.datasets[0].data = bikesData.slice(startIndex, end);
   chart.data.datasets[1].data = tempData.slice(startIndex, end);
   chart.update();
-  positionInfoCard();
+  positionTodayCard();
+  updateBikeCardFromBikePosition();
 }
 
-// Info-Card mit aktuellsten Werten füllen
-function updateInfoCardWithLatest() {
+// ---- Cards befüllen ----
+function updateTodayCard() {
   if (
     labels.length === 0 ||
-    !infoTempValue ||
-    !infoRainValue ||
-    !infoBikesValue
-  ) {
+    !todayTempValue ||
+    !todayRainValue ||
+    !todayBikesValue
+  )
     return;
-  }
 
-  const lastIndex = labels.length - 1;
-
-  const latestTemp = tempData[lastIndex];
-  const latestRain = rainData[lastIndex];
-  const latestBikes = bikesData[lastIndex];
-
-  infoTempValue.textContent =
-    typeof latestTemp === "number" ? `${latestTemp}°` : "--°";
-
-  infoRainValue.textContent =
-    typeof latestRain === "number" ? `${latestRain}mm` : "0mm";
-
-  infoBikesValue.textContent =
-    typeof latestBikes === "number" ? latestBikes : "--";
-}
-
-// Info-Card horizontal auf heutigen Tag setzen
-function positionInfoCard() {
-  if (!infoCard || labels.length === 0 || !chartBox) return;
-
-  // Index: heute oder letzter Tag
-  const index =
+  let idx =
     todayIndex !== null && todayIndex !== -1
       ? todayIndex
       : labels.length - 1;
 
-  // sicherstellen, dass Fenster den Index enthält
+  const t = tempData[idx];
+  const r = rainData[idx];
+  const b = bikesData[idx];
+
+  todayTempValue.textContent = typeof t === "number" ? `${t}°` : "--°";
+  todayRainValue.textContent = typeof r === "number" ? `${r}mm` : "0mm";
+  todayBikesValue.textContent = typeof b === "number" ? b : "--";
+}
+
+// Position gelbe Card bei heute
+function positionTodayCard() {
+  if (!todayCard || labels.length === 0 || !chartBox) return;
+
+  let idx =
+    todayIndex !== null && todayIndex !== -1
+      ? todayIndex
+      : labels.length - 1;
+
+  const containerWidth = chartBox.clientWidth || 0;
+  const visibleCount = Math.min(WINDOW_SIZE, labels.length);
+
+  // sicherstellen, dass Fenster heute enthält
   const endCurrent = Math.min(startIndex + WINDOW_SIZE, labels.length);
-  if (index < startIndex || index >= endCurrent) {
+  if (idx < startIndex || idx >= endCurrent) {
     if (labels.length > WINDOW_SIZE) {
       startIndex = Math.max(
         0,
-        Math.min(index - (WINDOW_SIZE - 1), labels.length - WINDOW_SIZE)
+        Math.min(idx - (WINDOW_SIZE - 1), labels.length - WINDOW_SIZE)
       );
       const end = Math.min(startIndex + WINDOW_SIZE, labels.length);
       chart.data.labels = labels.slice(startIndex, end);
@@ -259,19 +264,48 @@ function positionInfoCard() {
     }
   }
 
-  const containerWidth = chartBox.clientWidth || 0;
-  const visibleCount = Math.min(WINDOW_SIZE, labels.length);
   const steps = Math.max(visibleCount - 1, 1);
-  const slot = index - startIndex; // 0..visibleCount-1
+  const slot = idx - startIndex;
   const stepPx = containerWidth / steps;
   const x = slot * stepPx;
 
-  infoCard.style.left = `${x}px`;
-  infoCard.style.transform = "translateX(-50%)";
+  todayCard.style.left = `${x}px`;
+  todayCard.style.transform = "translateX(-50%)";
+}
+
+// Blaue Card anhand Bike-Position
+function updateBikeCardFromBikePosition() {
+  if (!bikeCard || labels.length === 0 || !chartBox) return;
+
+  const containerWidth = chartBox.clientWidth || 0;
+  const bikeRect = bike.getBoundingClientRect();
+  const chartRect = chartBox.getBoundingClientRect();
+  const relativeX = bikeRect.left + bikeRect.width / 2 - chartRect.left;
+
+  const visibleCount = Math.min(WINDOW_SIZE, labels.length);
+  const steps = Math.max(visibleCount - 1, 1);
+  const stepPx = containerWidth / steps;
+
+  let slot = Math.round(relativeX / stepPx);
+  slot = Math.max(0, Math.min(visibleCount - 1, slot));
+
+  const idx = startIndex + slot;
+
+  // Werte für dieses Datum setzen (Max Bikes / Temp / Rain des Tages)
+  const t = tempData[idx];
+  const r = rainData[idx];
+  const b = bikesData[idx];
+
+  bikeTempValue.textContent = typeof t === "number" ? `${t}°` : "--°";
+  bikeRainValue.textContent = typeof r === "number" ? `${r}mm` : "0mm";
+  bikeBikesValue.textContent = typeof b === "number" ? b : "--";
+
+  bikeCard.style.left = `${slot * stepPx}px`;
+  bikeCard.style.transform = "translateX(-50%)";
 }
 
 async function initChart() {
-  await getAll(); // füllt labels, bikesData, tempData, rainData
+  await getAll();
 
   if (labels.length > WINDOW_SIZE) {
     startIndex = labels.length - WINDOW_SIZE;
@@ -337,8 +371,9 @@ async function initChart() {
 
   updateBikeTrackLayout();
   positionFromStartIndex();
-  updateInfoCardWithLatest();
-  positionInfoCard();
+  updateTodayCard();
+  positionTodayCard();
+  updateBikeCardFromBikePosition();
 }
 
 initChart();
@@ -346,34 +381,11 @@ initChart();
 window.addEventListener("resize", () => {
   updateBikeTrackLayout();
   positionFromStartIndex();
-  positionInfoCard();
+  positionTodayCard();
+  updateBikeCardFromBikePosition();
 });
 
-// ---- Weitere API-Funktionen (optional) ----
-async function getByDate(date) {
-  const url = `https://meteoride-im3.meteoride-im3.com/backend/api/getByDate.php?date=${date}`;
-  try {
-    const response = await fetch(url);
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error(error);
-    return [];
-  }
-}
-
-async function getBy3Days() {
-  const url = `https://meteoride-im3.meteoride-im3.com/backend/api/getBy3Days.php`;
-  try {
-    const response = await fetch(url);
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error(error);
-  }
-}
-
-// ---- Verlinkung Google Maps Leipzig ----
+// ---- Maps ----
 const leipzigBtn = document.getElementById("leipzigBtn");
 const mapsOverlay = document.getElementById("mapsOverlay");
 const returnBtn = document.getElementById("returnBtn");

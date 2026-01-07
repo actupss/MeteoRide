@@ -36,25 +36,42 @@
         macht sichtbar, wann die Leipziger:innen am liebsten radeln.
       </p>
 
-      <!-- Chart mit Info-Card -->
+      <!-- Chart mit Info-Cards -->
       <main class="main-content">
         <div class="chart-container">
           <canvas id="chart"></canvas>
 
-          <!-- Info-Card ("gelber Balken") im Chart -->
-          <div class="info-card" id="infoCard">
+          <!-- Gelbe Card: Heute -->
+          <div class="info-card today-card" id="todayCard">
             <div class="info-top">
               <div class="info-temp">
-                <span id="infoTempValue">--°</span>
+                <span id="todayTempValue">--°</span>
               </div>
               <div class="info-rain">
-                <span id="infoRainValue">0mm</span>
+                <span id="todayRainValue">0mm</span>
               </div>
             </div>
 
             <div class="info-middle">
-              <span id="infoBikesValue">--</span>
+              <span id="todayBikesValue">--</span>
               <span class="info-bikes-label">Aktuell gebuchte Fahrräder</span>
+            </div>
+          </div>
+
+          <!-- Blaue Card: Datum unter dem Velo (z.B. gestern) -->
+          <div class="info-card bike-card" id="bikeCard">
+            <div class="info-top">
+              <div class="info-temp">
+                <span id="bikeTempValue">--°</span>
+              </div>
+              <div class="info-rain">
+                <span id="bikeRainValue">0mm</span>
+              </div>
+            </div>
+
+            <div class="info-middle">
+              <span id="bikeBikesValue">--</span>
+              <span class="info-bikes-label">Total gebuchte Fahrräder</span>
             </div>
           </div>
         </div>
