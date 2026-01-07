@@ -1,4 +1,4 @@
-/* ======= BASIS ======= */
+/* BASIS */
 * {
   box-sizing: border-box;
 }
@@ -154,7 +154,7 @@ body {
   display: block;
 }
 
-/* Basis für beide Cards */
+/* Karten-Basis */
 .info-card {
   position: absolute;
   bottom: -40px;
@@ -167,21 +167,33 @@ body {
   flex-direction: column;
   justify-content: space-between;
   min-width: 200px;
+
+  /* NEU: fixe Höhe für alle Balken */
+  height: 260px;      /* Wert nach Bedarf anpassen */
 }
 
-/* Gelb: Heute */
+/* Farben pro Datum */
 .today-card {
-  background-color: #fff8e8;
-  left: 50%; /* wird per JS exakt gesetzt */
+  background-color: #fff8e8; /* gelb */
+  left: 50%;
 }
 
-/* Blau: Datum unter Velo */
-.bike-card {
-  background-color: #e0f0ff;
-  left: 50%; /* wird per JS exakt gesetzt */
+.blue-card {
+  background-color: #e0f0ff; /* blau */
+  left: 50%;
 }
 
-/* Inhalt Cards */
+.past-card {
+  background-color: #dcdcdc; /* grau */
+  left: 50%;
+}
+
+.light-card {
+  background-color: #f2f2f2; /* hellgrau */
+  left: 50%;
+}
+
+/* Card-Inhalt */
 .info-top {
   display: flex;
   flex-direction: column;

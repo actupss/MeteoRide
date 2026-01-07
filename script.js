@@ -23,12 +23,22 @@ const todayTempValue = document.getElementById("todayTempValue");
 const todayRainValue = document.getElementById("todayRainValue");
 const todayBikesValue = document.getElementById("todayBikesValue");
 
-const bikeCard = document.getElementById("bikeCard");
-const bikeTempValue = document.getElementById("bikeTempValue");
-const bikeRainValue = document.getElementById("bikeRainValue");
-const bikeBikesValue = document.getElementById("bikeBikesValue");
+const yesterdayCard = document.getElementById("yesterdayCard");
+const yesterdayTempValue = document.getElementById("yesterdayTempValue");
+const yesterdayRainValue = document.getElementById("yesterdayRainValue");
+const yesterdayBikesValue = document.getElementById("yesterdayBikesValue");
 
-let todayIndex = null; // Index von heute
+const pastCard = document.getElementById("pastCard");
+const pastTempValue = document.getElementById("pastTempValue");
+const pastRainValue = document.getElementById("pastRainValue");
+const pastBikesValue = document.getElementById("pastBikesValue");
+
+const oldCard = document.getElementById("oldCard");
+const oldTempValue = document.getElementById("oldTempValue");
+const oldRainValue = document.getElementById("oldRainValue");
+const oldBikesValue = document.getElementById("oldBikesValue");
+
+let todayIndex = null;
 
 // Track an Chart-Breite anpassen
 function updateBikeTrackLayout() {
@@ -111,7 +121,7 @@ if (bike && bikeTrack) {
       chart.data.datasets[0].data = bikesData.slice(startIndex, end);
       chart.data.datasets[1].data = tempData.slice(startIndex, end);
       chart.update();
-      updateBikeCardFromBikePosition();
+      positionAllCards();
     }
   });
 
@@ -206,102 +216,87 @@ function updateChartWindow(direction) {
   chart.data.datasets[0].data = bikesData.slice(startIndex, end);
   chart.data.datasets[1].data = tempData.slice(startIndex, end);
   chart.update();
-  positionTodayCard();
-  updateBikeCardFromBikePosition();
+  positionAllCards();
 }
 
-// ---- Cards befüllen ----
-function updateTodayCard() {
-  if (
-    labels.length === 0 ||
-    !todayTempValue ||
-    !todayRainValue ||
-    !todayBikesValue
-  )
-    return;
-
-  let idx =
-    todayIndex !== null && todayIndex !== -1
-      ? todayIndex
-      : labels.length - 1;
-
+// ---- Helper für Werte ----
+function setCardValues(idx, tempEl, rainEl, bikesEl) {
   const t = tempData[idx];
   const r = rainData[idx];
   const b = bikesData[idx];
 
-  todayTempValue.textContent = typeof t === "number" ? `${t}°` : "--°";
-  todayRainValue.textContent = typeof r === "number" ? `${r}mm` : "0mm";
-  todayBikesValue.textContent = typeof b === "number" ? b : "--";
+  tempEl.textContent = typeof t === "number" ? `${t}°` : "--°";
+  rainEl.textContent = typeof r === "number" ? `${r}mm` : "0mm";
+  bikesEl.textContent = typeof b === "number" ? b : "--";
 }
 
-// Position gelbe Card bei heute
-function positionTodayCard() {
-  if (!todayCard || labels.length === 0 || !chartBox) return;
-
-  let idx =
-    todayIndex !== null && todayIndex !== -1
-      ? todayIndex
-      : labels.length - 1;
+// generische Positionsfunktion für eine Card
+function positionCardAtIndex(card, idx) {
+  if (!card || labels.length === 0 || !chartBox) return;
 
   const containerWidth = chartBox.clientWidth || 0;
   const visibleCount = Math.min(WINDOW_SIZE, labels.length);
-
-  // sicherstellen, dass Fenster heute enthält
-  const endCurrent = Math.min(startIndex + WINDOW_SIZE, labels.length);
-  if (idx < startIndex || idx >= endCurrent) {
-    if (labels.length > WINDOW_SIZE) {
-      startIndex = Math.max(
-        0,
-        Math.min(idx - (WINDOW_SIZE - 1), labels.length - WINDOW_SIZE)
-      );
-      const end = Math.min(startIndex + WINDOW_SIZE, labels.length);
-      chart.data.labels = labels.slice(startIndex, end);
-      chart.data.datasets[0].data = bikesData.slice(startIndex, end);
-      chart.data.datasets[1].data = tempData.slice(startIndex, end);
-      chart.update();
-    } else {
-      startIndex = 0;
-    }
-  }
-
   const steps = Math.max(visibleCount - 1, 1);
   const slot = idx - startIndex;
+
+  if (slot < 0 || slot >= visibleCount) {
+    card.style.display = "none";
+    return;
+  }
+
+  card.style.display = "flex";
   const stepPx = containerWidth / steps;
   const x = slot * stepPx;
 
-  todayCard.style.left = `${x}px`;
-  todayCard.style.transform = "translateX(-50%)";
+  card.style.left = `${x}px`;
+  card.style.transform = "translateX(-50%)";
 }
 
-// Blaue Card anhand Bike-Position
-function updateBikeCardFromBikePosition() {
-  if (!bikeCard || labels.length === 0 || !chartBox) return;
+// ---- Cards aktualisieren ----
+function positionAllCards() {
+  if (todayIndex === null || todayIndex === -1) return;
 
-  const containerWidth = chartBox.clientWidth || 0;
-  const bikeRect = bike.getBoundingClientRect();
-  const chartRect = chartBox.getBoundingClientRect();
-  const relativeX = bikeRect.left + bikeRect.width / 2 - chartRect.left;
+  const todayIdx = todayIndex;
+  const yesterdayIdx = todayIndex - 1;
+  const pastIdx = todayIndex - 2;
+  const oldIdx = todayIndex - 3;
 
-  const visibleCount = Math.min(WINDOW_SIZE, labels.length);
-  const steps = Math.max(visibleCount - 1, 1);
-  const stepPx = containerWidth / steps;
+  // heute
+  if (todayIdx >= 0 && todayIdx < labels.length) {
+    setCardValues(todayIdx, todayTempValue, todayRainValue, todayBikesValue);
+    positionCardAtIndex(todayCard, todayIdx);
+  } else {
+    todayCard.style.display = "none";
+  }
 
-  let slot = Math.round(relativeX / stepPx);
-  slot = Math.max(0, Math.min(visibleCount - 1, slot));
+  // gestern
+  if (yesterdayIdx >= 0 && yesterdayIdx < labels.length) {
+    setCardValues(
+      yesterdayIdx,
+      yesterdayTempValue,
+      yesterdayRainValue,
+      yesterdayBikesValue
+    );
+    positionCardAtIndex(yesterdayCard, yesterdayIdx);
+  } else {
+    yesterdayCard.style.display = "none";
+  }
 
-  const idx = startIndex + slot;
+  // vorgestern
+  if (pastIdx >= 0 && pastIdx < labels.length) {
+    setCardValues(pastIdx, pastTempValue, pastRainValue, pastBikesValue);
+    positionCardAtIndex(pastCard, pastIdx);
+  } else {
+    pastCard.style.display = "none";
+  }
 
-  // Werte für dieses Datum setzen (Max Bikes / Temp / Rain des Tages)
-  const t = tempData[idx];
-  const r = rainData[idx];
-  const b = bikesData[idx];
-
-  bikeTempValue.textContent = typeof t === "number" ? `${t}°` : "--°";
-  bikeRainValue.textContent = typeof r === "number" ? `${r}mm` : "0mm";
-  bikeBikesValue.textContent = typeof b === "number" ? b : "--";
-
-  bikeCard.style.left = `${slot * stepPx}px`;
-  bikeCard.style.transform = "translateX(-50%)";
+  // 4. letzter Tag
+  if (oldIdx >= 0 && oldIdx < labels.length) {
+    setCardValues(oldIdx, oldTempValue, oldRainValue, oldBikesValue);
+    positionCardAtIndex(oldCard, oldIdx);
+  } else {
+    oldCard.style.display = "none";
+  }
 }
 
 async function initChart() {
@@ -371,9 +366,7 @@ async function initChart() {
 
   updateBikeTrackLayout();
   positionFromStartIndex();
-  updateTodayCard();
-  positionTodayCard();
-  updateBikeCardFromBikePosition();
+  positionAllCards();
 }
 
 initChart();
@@ -381,8 +374,7 @@ initChart();
 window.addEventListener("resize", () => {
   updateBikeTrackLayout();
   positionFromStartIndex();
-  positionTodayCard();
-  updateBikeCardFromBikePosition();
+  positionAllCards();
 });
 
 // ---- Maps ----
