@@ -8,11 +8,13 @@
   </head>
   <body>
     <div class="page">
+      <!-- Standort-Button -->
       <button id="leipzigBtn" class="location-btn">
         <img src="images/Standort.png" alt="Leipzig Icon" class="icon" />
         <span>Leipzig</span>
       </button>
 
+      <!-- Maps-Overlay -->
       <div id="mapsOverlay" class="maps-overlay">
         <div class="maps-container">
           <iframe id="mapsFrame" src="" frameborder="0"></iframe>
@@ -25,6 +27,7 @@
         </div>
       </div>
 
+      <!-- Titel & Beschreibung -->
       <h1 class="title"><span>MeteoRide</span></h1>
       <p class="description">
         In Leipzig greifen viele Menschen auf das Fahrradleihsystem Nextbike
@@ -33,17 +36,38 @@
         macht sichtbar, wann die Leipziger:innen am liebsten radeln.
       </p>
 
+      <!-- Chart + Info-Card -->
       <main class="main-content">
-        <div class="chart-container">
-          <canvas id="chart"></canvas>
+        <div class="chart-and-card">
+          <div class="chart-container">
+            <canvas id="chart"></canvas>
+          </div>
+
+          <!-- Info-Card für aktuellen Tag -->
+          <div class="info-card">
+            <div class="info-top">
+              <div class="info-temp">
+                <span id="infoTempValue">--°</span>
+              </div>
+              <div class="info-rain">
+                <span id="infoRainValue">0mm</span>
+              </div>
+            </div>
+
+            <div class="info-middle">
+              <span id="infoBikesValue">--</span>
+              <span class="info-bikes-label">Aktuell gebuchte Fahrräder</span>
+            </div>
+          </div>
         </div>
       </main>
 
-      <!-- Straße + Velo -->
+      <!-- Straße -->
       <div class="street">
         <div class="road-stripes"></div>
       </div>
 
+      <!-- Velo auf Track -->
       <div id="bikeTrack">
         <div class="bike">
           <div class="bike-wheel left"></div>
@@ -54,6 +78,7 @@
       </div>
     </div>
 
+    <!-- Aktuelle Uhrzeit -->
     <div class="time-box">
       <span class="time-value" id="currentTime">15:54</span>
       <span class="time-line"></span>
