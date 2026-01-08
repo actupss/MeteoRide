@@ -12,7 +12,7 @@ const WINDOW_SIZE = 4;
 
 // Velo / Track
 const bikeTrack = document.getElementById("bikeTrack");
-const bike = document.querySelector(".bike");
+const bike = document.querySelector(".bike-img");
 const chartBox = document.querySelector(".chart-container");
 
 
