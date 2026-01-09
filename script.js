@@ -38,6 +38,7 @@ const oldTempValue = document.getElementById("oldTempValue");
 const oldRainValue = document.getElementById("oldRainValue");
 const oldBikesValue = document.getElementById("oldBikesValue");
 
+// optional noch vorhanden, aber nicht mehr für Cards genutzt
 let todayIndex = null;
 
 // ---- Track an Chart-Breite anpassen ----
@@ -139,7 +140,7 @@ async function getAll() {
 
     const byDate = {};
     rawData.forEach((row) => {
-      const date = row.timestamp.slice(0, 10);
+      const date = row.timestamp.slice(0, 10); // YYYY-MM-DD
       if (!byDate[date]) {
         byDate[date] = { temps: [], bikes: [], rain: [] };
       }
@@ -157,11 +158,33 @@ async function getAll() {
 
     allDates.forEach((date) => {
       const day = byDate[date];
-      const maxBikes = Math.max(...day.bikes);
+
+      const validBikes = day.bikes.filter((v) => Number.isFinite(v));
+      const validTemps = day.temps.filter((v) => Number.isFinite(v));
+      const validRain = day.rain.filter((v) => Number.isFinite(v));
+
+      if (
+        validBikes.length === 0 &&
+        validTemps.length === 0 &&
+        validRain.length === 0
+      ) {
+        return; // komplett leere Tage überspringen
+      }
+
+      const maxBikes =
+        validBikes.length > 0 ? Math.max(...validBikes) : 0;
+
       const avgTemp =
-        day.temps.reduce((sum, t) => sum + t, 0) / day.temps.length;
+        validTemps.length > 0
+          ? validTemps.reduce((sum, t) => sum + t, 0) /
+            validTemps.length
+          : null;
+
       const avgRain =
-        day.rain.reduce((sum, r) => sum + r, 0) / day.rain.length;
+        validRain.length > 0
+          ? validRain.reduce((sum, r) => sum + r, 0) /
+            validRain.length
+          : 0;
 
       const d = new Date(date);
       const dd = String(d.getDate()).padStart(2, "0");
@@ -170,11 +193,13 @@ async function getAll() {
 
       labels.push(`${dd}.${mm}.${yy}`);
       bikesData.push(maxBikes);
-      tempData.push(Number(avgTemp.toFixed(1)));
+      tempData.push(
+        avgTemp !== null ? Number(avgTemp.toFixed(1)) : null
+      );
       rainData.push(Number(avgRain.toFixed(1)));
     });
 
-    // Index von heute
+    // Index von heute (falls später noch gebraucht)
     const today = new Date();
     const todayStr = `${String(today.getDate()).padStart(2, "0")}.${String(
       today.getMonth() + 1
@@ -205,11 +230,11 @@ function setCardValues(idx, cardEl, tempEl, rainEl, bikesEl) {
   const r = rainData[idx];
   const b = bikesData[idx];
 
-  tempEl.textContent = typeof t === "number" ? `${t}°` : "--°";
-  rainEl.textContent = typeof r === "number" ? `${r}mm` : "0mm";
-  bikesEl.textContent = typeof b === "number" ? b : "--";
+  tempEl.textContent = Number.isFinite(t) ? `${t}°` : "--°";
+  rainEl.textContent = Number.isFinite(r) ? `${r}mm` : "0mm";
+  bikesEl.textContent = Number.isFinite(b) ? b : "--";
 
-  if (cardEl && typeof t === "number") {
+  if (cardEl && Number.isFinite(t)) {
     cardEl.classList.remove("today-card", "blue-card", "past-card", "light-card");
     const cls = getCardClassForTemp(t);
     if (cls) cardEl.classList.add(cls);
@@ -240,67 +265,67 @@ function positionCardAtIndex(card, idx) {
   card.style.transform = "translateX(-50%)";
 }
 
-// ---- Cards aktualisieren ----
+// ---- Cards aktualisieren: immer 4 Tage des aktuellen Fensters ----
 function positionAllCards() {
-  if (todayIndex === null || todayIndex === -1) return;
+  if (labels.length === 0) return;
 
-  const todayIdx = todayIndex;
-  const yesterdayIdx = todayIndex - 1;
-  const pastIdx = todayIndex - 2;
-  const oldIdx = todayIndex - 3;
+  const idx0 = startIndex;
+  const idx1 = startIndex + 1;
+  const idx2 = startIndex + 2;
+  const idx3 = startIndex + 3;
 
-  // heute
-  if (todayIdx >= 0 && todayIdx < labels.length) {
+  // Card 1 → erster Tag im Fenster
+  if (idx0 >= 0 && idx0 < labels.length) {
     setCardValues(
-      todayIdx,
+      idx0,
       todayCard,
       todayTempValue,
       todayRainValue,
       todayBikesValue
     );
-    positionCardAtIndex(todayCard, todayIdx);
+    positionCardAtIndex(todayCard, idx0);
   } else {
     todayCard.style.display = "none";
   }
 
-  // gestern
-  if (yesterdayIdx >= 0 && yesterdayIdx < labels.length) {
+  // Card 2 → zweiter Tag im Fenster
+  if (idx1 >= 0 && idx1 < labels.length) {
     setCardValues(
-      yesterdayIdx,
+      idx1,
       yesterdayCard,
       yesterdayTempValue,
       yesterdayRainValue,
       yesterdayBikesValue
     );
-    positionCardAtIndex(yesterdayCard, yesterdayIdx);
+    positionCardAtIndex(yesterdayCard, idx1);
   } else {
     yesterdayCard.style.display = "none";
   }
 
-  // vorgestern
-  if (pastIdx >= 0 && pastIdx < labels.length) {
+  // Card 3 → dritter Tag im Fenster
+  if (idx2 >= 0 && idx2 < labels.length) {
     setCardValues(
-      pastIdx,
+      idx2,
       pastCard,
       pastTempValue,
       pastRainValue,
       pastBikesValue
     );
-    positionCardAtIndex(pastCard, pastIdx);
+    positionCardAtIndex(pastCard, idx2);
   } else {
     pastCard.style.display = "none";
   }
 
-  // 4. letzter Tag
-  if (oldIdx >= 0 && oldIdx < labels.length) {
+  // Card 4 → vierter Tag im Fenster
+  if (idx3 >= 0 && idx3 < labels.length) {
     setCardValues(
-      oldIdx,
+      idx3,
       oldCard,
       oldTempValue,
       oldRainValue,
       oldBikesValue
     );
-    positionCardAtIndex(oldCard, oldIdx);
+    positionCardAtIndex(oldCard, idx3);
   } else {
     oldCard.style.display = "none";
   }
@@ -367,10 +392,14 @@ async function initChart() {
           callbacks: {
             label: (ctx) => {
               const globalIndex = startIndex + ctx.dataIndex;
+              const b = bikesData[globalIndex];
+              const t = tempData[globalIndex];
+              const r = rainData[globalIndex];
+
               return [
-                `Bikes: ${bikesData[globalIndex]}`,
-                `Temp: ${tempData[globalIndex]}°`,
-                `Regen: ${rainData[globalIndex]} mm`,
+                `Bikes: ${Number.isFinite(b) ? b : "--"}`,
+                `Temp: ${Number.isFinite(t) ? t + "°" : "--°"}`,
+                `Regen: ${Number.isFinite(r) ? r + " mm" : "0 mm"}`,
               ];
             },
           },
