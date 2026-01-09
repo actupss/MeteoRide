@@ -5,8 +5,11 @@ let labels = [];
 let bikesData = [];
 let tempData = [];
 let rainData = [];
+
+// Fenstergröße: Desktop/Tablet = 4, Mobile = 2
+let WINDOW_SIZE = getWindowSizeForScreen();
+
 let startIndex = 0;
-const WINDOW_SIZE = 4;
 
 // Velo / Track
 const bikeTrack = document.getElementById("bikeTrack");
@@ -46,6 +49,13 @@ const oldLabelEl = oldCard.querySelector(".info-bikes-label");
 
 // Index für "heute"
 let todayIndex = null;
+
+// ---- Fenstergröße abhängig von der Bildschirmbreite ----
+function getWindowSizeForScreen() {
+  const w = window.innerWidth || document.documentElement.clientWidth;
+  // Mobile: bis 767 px -> 2 Tage, sonst 4 Tage
+  return w <= 767 ? 2 : 4;
+}
 
 // ---- Track an Chart-Breite anpassen ----
 function updateBikeTrackLayout() {
@@ -97,7 +107,7 @@ function getCardClassForTemp(temp) {
   return "today-card";
 }
 
-// ---- Drag fürs Velo ----
+// ---- Drag fürs Velo (Desktop) ----
 if (bike && bikeTrack) {
   bike.addEventListener("mousedown", (e) => {
     isDragging = true;
@@ -121,12 +131,7 @@ if (bike && bikeTrack) {
     const newStart = startIndexFromPosition(newLeft);
     if (newStart !== startIndex && chart) {
       startIndex = newStart;
-      const end = Math.min(startIndex + WINDOW_SIZE, labels.length);
-      chart.data.labels = labels.slice(startIndex, end);
-      chart.data.datasets[0].data = bikesData.slice(startIndex, end);
-      chart.data.datasets[1].data = tempData.slice(startIndex, end);
-      chart.update();
-      positionAllCards();
+      updateChartWindow();
     }
   });
 
@@ -164,12 +169,7 @@ if (bike && bikeTrack) {
     const newStart = startIndexFromPosition(newLeft);
     if (newStart !== startIndex && chart) {
       startIndex = newStart;
-      const end = Math.min(startIndex + WINDOW_SIZE, labels.length);
-      chart.data.labels = labels.slice(startIndex, end);
-      chart.data.datasets[0].data = bikesData.slice(startIndex, end);
-      chart.data.datasets[1].data = tempData.slice(startIndex, end);
-      chart.update();
-      positionAllCards();
+      updateChartWindow();
     }
 
     e.preventDefault();
@@ -259,7 +259,7 @@ async function getAll() {
 const canvas = document.querySelector("#chart");
 const ctx = canvas.getContext("2d");
 
-function getWindow() {
+function getWindowData() {
   const end = Math.min(startIndex + WINDOW_SIZE, labels.length);
   return {
     labels: labels.slice(startIndex, end),
@@ -299,7 +299,7 @@ function setCardValues(idx, cardEl, tempEl, rainEl, bikesEl, labelEl) {
   }
 }
 
-// ---- Cards positionieren: enger zusammen im Chart ----
+// ---- Cards positionieren ----
 function positionCardAtIndex(card, idx) {
   if (!card || labels.length === 0 || !chartBox) return;
 
@@ -394,8 +394,27 @@ function positionAllCards() {
   }
 }
 
+// ---- Chart-Fenster aktualisieren (Labels + Daten) ----
+function updateChartWindow() {
+  if (!chart) return;
+
+  const win = getWindowData();
+  chart.data.labels = win.labels;
+  chart.data.datasets[0].data = win.bikes;
+  chart.data.datasets[1].data = win.temps;
+  chart.update();
+
+  positionAllCards();
+}
+
+// ---- Initiales Setup des Charts ----
 async function initChart() {
+  // Fenstergröße abhängig von der aktuellen Breite setzen
+  WINDOW_SIZE = getWindowSizeForScreen();
+
   await getAll();
+
+  if (labels.length === 0) return;
 
   if (todayIndex === -1) {
     startIndex = Math.max(labels.length - WINDOW_SIZE, 0);
@@ -407,7 +426,7 @@ async function initChart() {
     }
   }
 
-  const win = getWindow();
+  const win = getWindowData();
 
   chart = new Chart(ctx, {
     type: "line",
@@ -418,7 +437,6 @@ async function initChart() {
           label: "Gebuchte Bikes",
           data: win.bikes,
           borderColor: "#000000",
-          // kein borderWidth → Standarddicke
           fill: false,
           tension: 0.3,
           pointRadius: 0,
@@ -427,7 +445,6 @@ async function initChart() {
           label: "Temperatur",
           data: win.temps,
           borderColor: "#ff4b5c",
-          // kein borderWidth → Standarddicke
           fill: false,
           tension: 0.3,
           pointRadius: 0,
@@ -485,9 +502,23 @@ async function initChart() {
 
 initChart();
 
+// ---- Resize-Handler: WINDOW_SIZE + Layout anpassen ----
 window.addEventListener("resize", () => {
+  const newWindowSize = getWindowSizeForScreen();
+
+  // Nur neu berechnen, wenn sich die Logik (2 vs. 4 Tage) ändert
+  if (newWindowSize !== WINDOW_SIZE) {
+    WINDOW_SIZE = newWindowSize;
+
+    if (labels.length > 0) {
+      // startIndex neu justieren (möglichst am rechten Rand bleiben)
+      startIndex = Math.max(labels.length - WINDOW_SIZE, 0);
+      updateChartWindow();
+      positionFromStartIndex();
+    }
+  }
+
   updateBikeTrackLayout();
-  positionFromStartIndex();
   positionAllCards();
 });
 
