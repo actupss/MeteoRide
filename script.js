@@ -38,7 +38,13 @@ const oldTempValue = document.getElementById("oldTempValue");
 const oldRainValue = document.getElementById("oldRainValue");
 const oldBikesValue = document.getElementById("oldBikesValue");
 
-// optional noch vorhanden, aber nicht mehr für Cards genutzt
+// Label-Spans (Text: Aktuell/Total)
+const todayLabelEl = todayCard.querySelector(".info-bikes-label");
+const yesterdayLabelEl = yesterdayCard.querySelector(".info-bikes-label");
+const pastLabelEl = pastCard.querySelector(".info-bikes-label");
+const oldLabelEl = oldCard.querySelector(".info-bikes-label");
+
+// Index für "heute"
 let todayIndex = null;
 
 // ---- Track an Chart-Breite anpassen ----
@@ -49,7 +55,7 @@ function updateBikeTrackLayout() {
   bikeTrack.style.width = rect.width + "px";
 }
 
-// ---- Velo-Position aus startIndex ableiten (Tag für Tag) ----
+// ---- Velo-Position aus startIndex ableiten ----
 function positionFromStartIndex() {
   const total = labels.length;
   if (!bike || !bikeTrack || total === 0) return;
@@ -59,13 +65,13 @@ function positionFromStartIndex() {
   const usableWidth = Math.max(trackWidth - bikeWidth, 0);
 
   const maxStart = Math.max(total - WINDOW_SIZE, 1);
-  const ratio = startIndex / maxStart; // 0..1
+  const ratio = maxStart > 0 ? startIndex / maxStart : 0; // 0..1
   const px = ratio * usableWidth;
 
   bike.style.left = `${px}px`;
 }
 
-// ---- startIndex aus Pixel-Position (jeder Tag ein Slot) ----
+// ---- startIndex aus Pixel-Position ----
 function startIndexFromPosition(px) {
   const total = labels.length;
   if (total === 0) return 0;
@@ -76,7 +82,7 @@ function startIndexFromPosition(px) {
 
   const ratio = Math.min(Math.max(px / usableWidth, 0), 1);
   let newIndex = Math.round(ratio * (total - 1));
-  newIndex = Math.min(newIndex, total - WINDOW_SIZE);
+  newIndex = Math.min(newIndex, Math.max(total - WINDOW_SIZE, 0));
 
   return newIndex;
 }
@@ -199,7 +205,7 @@ async function getAll() {
       rainData.push(Number(avgRain.toFixed(1)));
     });
 
-    // Index von heute (falls später noch gebraucht)
+    // Index von heute
     const today = new Date();
     const todayStr = `${String(today.getDate()).padStart(2, "0")}.${String(
       today.getMonth() + 1
@@ -224,8 +230,8 @@ function getWindow() {
   };
 }
 
-// ---- Helper für Werte ----
-function setCardValues(idx, cardEl, tempEl, rainEl, bikesEl) {
+// ---- Helper für Werte + Label-Text ----
+function setCardValues(idx, cardEl, tempEl, rainEl, bikesEl, labelEl) {
   const t = tempData[idx];
   const r = rainData[idx];
   const b = bikesData[idx];
@@ -234,10 +240,20 @@ function setCardValues(idx, cardEl, tempEl, rainEl, bikesEl) {
   rainEl.textContent = Number.isFinite(r) ? `${r}mm` : "0mm";
   bikesEl.textContent = Number.isFinite(b) ? b : "--";
 
+  // Temperatur-Farbklasse
   if (cardEl && Number.isFinite(t)) {
     cardEl.classList.remove("today-card", "blue-card", "past-card", "light-card");
     const cls = getCardClassForTemp(t);
     if (cls) cardEl.classList.add(cls);
+  }
+
+  // Text "Aktuell" vs. "Total" basierend auf Datum
+  if (labelEl) {
+    if (idx === todayIndex) {
+      labelEl.textContent = "Aktuell gebuchte Fahrräder";
+    } else {
+      labelEl.textContent = "Total gebuchte Fahrräder";
+    }
   }
 }
 
@@ -259,7 +275,7 @@ function positionCardAtIndex(card, idx) {
 
   const stepPx = containerWidth / steps;
   const x = slot * stepPx;
-  const centerX = x; // ggf. x + stepPx/2 testen
+  const centerX = x;
 
   card.style.left = `${centerX}px`;
   card.style.transform = "translateX(-50%)";
@@ -281,7 +297,8 @@ function positionAllCards() {
       todayCard,
       todayTempValue,
       todayRainValue,
-      todayBikesValue
+      todayBikesValue,
+      todayLabelEl
     );
     positionCardAtIndex(todayCard, idx0);
   } else {
@@ -295,7 +312,8 @@ function positionAllCards() {
       yesterdayCard,
       yesterdayTempValue,
       yesterdayRainValue,
-      yesterdayBikesValue
+      yesterdayBikesValue,
+      yesterdayLabelEl
     );
     positionCardAtIndex(yesterdayCard, idx1);
   } else {
@@ -309,21 +327,23 @@ function positionAllCards() {
       pastCard,
       pastTempValue,
       pastRainValue,
-      pastBikesValue
+      pastBikesValue,
+      pastLabelEl
     );
     positionCardAtIndex(pastCard, idx2);
   } else {
     pastCard.style.display = "none";
   }
 
-  // Card 4 → vierter Tag im Fenster
+  // Card 4 → vierter Tag im Fenster (heute, falls im Fenster)
   if (idx3 >= 0 && idx3 < labels.length) {
     setCardValues(
       idx3,
       oldCard,
       oldTempValue,
       oldRainValue,
-      oldBikesValue
+      oldBikesValue,
+      oldLabelEl
     );
     positionCardAtIndex(oldCard, idx3);
   } else {
@@ -334,10 +354,16 @@ function positionAllCards() {
 async function initChart() {
   await getAll();
 
-  if (labels.length > WINDOW_SIZE) {
-    startIndex = labels.length - WINDOW_SIZE;
+  // Fenster so legen, dass todayIndex möglichst rechts (4. Position) ist
+  if (todayIndex === -1) {
+    // kein heutiger Tag im Datensatz → letzte 4 Tage
+    startIndex = Math.max(labels.length - WINDOW_SIZE, 0);
   } else {
-    startIndex = 0;
+    startIndex = todayIndex - (WINDOW_SIZE - 1);
+    if (startIndex < 0) startIndex = 0;
+    if (startIndex > labels.length - WINDOW_SIZE) {
+      startIndex = Math.max(labels.length - WINDOW_SIZE, 0);
+    }
   }
 
   const win = getWindow();
