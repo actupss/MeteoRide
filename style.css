@@ -307,3 +307,226 @@ body {
   height: 2px;
   background-color: #ffffff;
 }
+
+/* ===================== */
+/*  Tablet-Ansicht       */
+/*  z.B. iPad: 768–1024  */
+/* ===================== */
+@media (min-width: 768px) and (max-width: 1024px) {
+  body {
+    background-color: #a8c6ff;
+  }
+
+  .page {
+    align-items: center;
+  }
+
+  .title {
+    font-size: 40px;
+    margin-top: 40px;
+  }
+
+  .description {
+    max-width: 420px;
+    font-size: 15px;
+    padding: 0 24px;
+  }
+
+  .chart-container {
+    max-width: 720px;
+    height: 320px;
+    margin-top: 24px;
+  }
+
+  .info-card {
+    min-width: 180px;
+    height: 230px;
+    bottom: 60px;
+    padding: 14px 16px;
+  }
+
+  .info-temp span {
+    font-size: 24px;
+  }
+
+  .info-middle span:first-child {
+    font-size: 26px;
+  }
+
+  .info-bikes-label {
+    font-size: 13px;
+  }
+
+  .street {
+    height: 70px;
+  }
+
+  #bikeTrack {
+    bottom: 65px;
+  }
+
+  .bike-img {
+    height: 52px;
+  }
+
+  .location-btn {
+    transform: translate(24px, 24px);
+    font-size: 18px;
+    padding: 6px 12px;
+  }
+
+  .time-box {
+    top: 28px;
+    right: 40px;
+  }
+
+  .time-value {
+    font-size: 26px;
+  }
+}
+
+/* ===================== */
+/*  Mobile-Ansicht       */
+/*  Handy: bis 767 px    */
+/* ===================== */
+@media (max-width: 767px) {
+  body {
+    background-color: #a8c6ff;
+  }
+
+  .page {
+    min-height: 100vh;
+    align-items: stretch;
+    padding-bottom: 80px;
+  }
+
+  .time-box {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    top: auto;
+    align-items: flex-end;
+    z-index: 30;
+  }
+
+  .time-value {
+    font-size: 22px;
+    letter-spacing: 1px;
+  }
+
+  .time-label {
+    font-size: 12px;
+  }
+
+  /* Titel + Text einspaltig, enger */
+  .title {
+    font-size: 28px;
+    margin: 80px 0 12px;
+  }
+
+  .description {
+    max-width: 320px;
+    font-size: 13px;
+    line-height: 1.5;
+    padding: 0 20px;
+  }
+
+  /* Chart höher, damit er wie im Figma-Screen wirkt */
+  .chart-container {
+    width: 100%;
+    max-width: 360px;
+    margin-top: 16px;
+    height: 360px;
+  }
+
+  /* Card etwas schmaler und kompakter */
+  .info-card {
+    min-width: 180px;
+    height: 220px;
+    bottom: 80px;
+    padding: 14px 16px;
+    gap: 8px;
+  }
+
+  .info-top {
+    margin-bottom: 18px;
+  }
+
+  .info-temp span {
+    font-size: 22px;
+  }
+
+  .info-rain span {
+    font-size: 14px;
+  }
+
+  .info-middle span:first-child {
+    font-size: 24px;
+  }
+
+  .info-bikes-label {
+    font-size: 12px;
+  }
+
+  /* Straße direkt über Leipzig-Button/Uhrzeit */
+  .street {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 95px; /* oberhalb von Button + Uhrzeit */
+    height: 60px;
+    margin-top: 0;
+    z-index: 10;
+  }
+
+  .road-stripes {
+    height: 3px;
+  }
+
+  #bikeTrack {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 150px; /* gleich hoch wie Straße, damit das Bike darauf sitzt */
+    height: 50px;
+    z-index: 15;
+  }
+
+  .bike-img {
+    height: 40px;
+  }
+
+  /* Leipzig-Button unten links */
+  .location-btn {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    top: auto;
+    transform: none;
+    flex-direction: column;
+    padding: 8px 14px;
+    font-size: 16px;
+    gap: 6px;
+    z-index: 30;
+    background-color: #a8c6ff;
+  }
+
+  .location-btn .icon {
+    width: 28px;
+    height: 28px;
+  }
+
+  /* Maps-Overlay: auf Mobile vollflächig, Return-Button größer antippbar */
+  .maps-container {
+    width: 100%;
+    height: 100vh;
+  }
+
+  .return-btn {
+    width: 120px;
+    height: 80px;
+    bottom: 20px;
+    right: 20px;
+    padding: 12px;
+  }
+}
