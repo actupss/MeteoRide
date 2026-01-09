@@ -137,6 +137,51 @@ if (bike && bikeTrack) {
   });
 }
 
+// ---- Touch-Drag fürs Velo (Handy/Tablet) ----
+if (bike && bikeTrack) {
+  bike.addEventListener("touchstart", (e) => {
+    const touch = e.touches[0];
+    isDragging = true;
+    dragStartX = touch.clientX;
+    bikeStartLeft = parseFloat(getComputedStyle(bike).left) || 0;
+    document.body.style.userSelect = "none";
+    e.preventDefault();
+  });
+
+  document.addEventListener("touchmove", (e) => {
+    if (!isDragging) return;
+    const touch = e.touches[0];
+
+    const dx = touch.clientX - dragStartX;
+    const trackWidth = bikeTrack.clientWidth || 0;
+    const bikeWidth = 60;
+    const maxOffset = Math.max(trackWidth - bikeWidth, 0);
+
+    let newLeft = bikeStartLeft + dx;
+    newLeft = Math.max(0, Math.min(maxOffset, newLeft));
+    bike.style.left = `${newLeft}px`;
+
+    const newStart = startIndexFromPosition(newLeft);
+    if (newStart !== startIndex && chart) {
+      startIndex = newStart;
+      const end = Math.min(startIndex + WINDOW_SIZE, labels.length);
+      chart.data.labels = labels.slice(startIndex, end);
+      chart.data.datasets[0].data = bikesData.slice(startIndex, end);
+      chart.data.datasets[1].data = tempData.slice(startIndex, end);
+      chart.update();
+      positionAllCards();
+    }
+
+    e.preventDefault();
+  });
+
+  document.addEventListener("touchend", () => {
+    if (!isDragging) return;
+    isDragging = false;
+    document.body.style.userSelect = "";
+  });
+}
+
 // ---- Daten aus getAll.php holen ----
 async function getAll() {
   const url = "https://meteoride-im3.meteoride-im3.com/backend/api/getAll.php";
@@ -177,19 +222,16 @@ async function getAll() {
         return;
       }
 
-      const maxBikes =
-        validBikes.length > 0 ? Math.max(...validBikes) : 0;
+      const maxBikes = validBikes.length > 0 ? Math.max(...validBikes) : 0;
 
       const avgTemp =
         validTemps.length > 0
-          ? validTemps.reduce((sum, t) => sum + t, 0) /
-            validTemps.length
+          ? validTemps.reduce((sum, t) => sum + t, 0) / validTemps.length
           : null;
 
       const avgRain =
         validRain.length > 0
-          ? validRain.reduce((sum, r) => sum + r, 0) /
-            validRain.length
+          ? validRain.reduce((sum, r) => sum + r, 0) / validRain.length
           : 0;
 
       const d = new Date(date);
@@ -199,9 +241,7 @@ async function getAll() {
 
       labels.push(`${dd}.${mm}.${yy}`);
       bikesData.push(maxBikes);
-      tempData.push(
-        avgTemp !== null ? Number(avgTemp.toFixed(1)) : null
-      );
+      tempData.push(avgTemp !== null ? Number(avgTemp.toFixed(1)) : null);
       rainData.push(Number(avgRain.toFixed(1)));
     });
 
@@ -240,7 +280,12 @@ function setCardValues(idx, cardEl, tempEl, rainEl, bikesEl, labelEl) {
   bikesEl.textContent = Number.isFinite(b) ? b : "--";
 
   if (cardEl && Number.isFinite(t)) {
-    cardEl.classList.remove("today-card", "blue-card", "past-card", "light-card");
+    cardEl.classList.remove(
+      "today-card",
+      "blue-card",
+      "past-card",
+      "light-card"
+    );
     const cls = getCardClassForTemp(t);
     if (cls) cardEl.classList.add(cls);
   }

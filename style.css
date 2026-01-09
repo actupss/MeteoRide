@@ -232,7 +232,7 @@ body {
 .street {
   position: relative;
   width: 100%;
-  height: 80px;
+  height: 95px;
   background-color: #003366;
   margin-top: 0;
 }
@@ -258,7 +258,7 @@ body {
   position: absolute;
   left: 0;
   right: 0;
-  bottom: 70px;
+  bottom: 90px;
   height: 60px;
   pointer-events: none;
 }
@@ -335,18 +335,26 @@ body {
   .chart-container {
     max-width: 720px;
     height: 320px;
-    margin-top: 24px;
+    margin-top: 40px;
   }
 
   .info-card {
-    min-width: 180px;
+    min-width: 200px;
     height: 230px;
-    bottom: 60px;
-    padding: 14px 16px;
+    bottom: 90px;
+    padding: 16px 18px;
+  }
+
+  .info-top {
+    margin-bottom: 18px;
   }
 
   .info-temp span {
     font-size: 24px;
+  }
+
+  .info-rain span {
+    font-size: 16px;
   }
 
   .info-middle span:first-child {
@@ -359,14 +367,16 @@ body {
 
   .street {
     height: 70px;
+    margin-top: 30px;
   }
 
   #bikeTrack {
-    bottom: 65px;
+    bottom: 80px;
+    height: 55px;
   }
 
   .bike-img {
-    height: 52px;
+    height: 50px;
   }
 
   .location-btn {
@@ -397,7 +407,7 @@ body {
   .page {
     min-height: 100vh;
     align-items: stretch;
-    padding-bottom: 80px;
+    padding-bottom: 160px;
   }
 
   .time-box {
@@ -435,17 +445,17 @@ body {
   .chart-container {
     width: 100%;
     max-width: 360px;
-    margin-top: 16px;
-    height: 360px;
+    margin: 80px auto 0;
+    height: 340px;
   }
 
   /* Card etwas schmaler und kompakter */
   .info-card {
-    min-width: 180px;
-    height: 220px;
-    bottom: 80px;
-    padding: 14px 16px;
-    gap: 8px;
+    min-width: 170px;
+    height: 210px;
+    bottom: 100px;
+    padding: 12px 14px;
+    gap: 6px;
   }
 
   .info-top {
@@ -473,7 +483,7 @@ body {
     position: fixed;
     left: 0;
     right: 0;
-    bottom: 95px; /* oberhalb von Button + Uhrzeit */
+    bottom: 90px; /* oberhalb von Button + Uhrzeit */
     height: 60px;
     margin-top: 0;
     z-index: 10;
@@ -487,7 +497,7 @@ body {
     position: fixed;
     left: 0;
     right: 0;
-    bottom: 150px; /* gleich hoch wie Straße, damit das Bike darauf sitzt */
+    bottom: 145px; /* gleich hoch wie Straße, damit das Bike darauf sitzt */
     height: 50px;
     z-index: 15;
   }
