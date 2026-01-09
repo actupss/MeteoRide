@@ -141,8 +141,8 @@ body {
 
 /* ===== Chart + Info-Cards ===== */
 .chart-container {
-  width: 90%;
-  max-width: 800px;
+  width: 95%;
+  max-width: 900px;
   margin: 20px auto 0;
   position: relative; /* für absolute Cards + z-index */
   height: 350px;
