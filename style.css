@@ -144,9 +144,9 @@ body {
   width: 90%;
   max-width: 800px;
   margin: 20px auto 0;
-  position: relative;
-  height: 280px; /* leicht kompakter */
-  z-index: 2;
+  position: relative; /* für absolute Cards + z-index */
+  height: 350px;
+  z-index: 2; /* Chart über den Cards */
 }
 
 #chart {
@@ -168,29 +168,28 @@ body {
   color: #000000;
   display: flex;
   flex-direction: column;
-  justify-content: center;   /* Inhalt vertikal mittig */
-  align-items: center;       /* horizontal mittig */
-  gap: 16px;
+  justify-content: center;
+  gap: 10px;
   min-width: 200px;
   height: 260px;
-  z-index: 1;
+  z-index: 1; /* unter dem Chart */
 }
 
-/* Basisfarben (werden durch Temp-Regeln überschrieben, falls gewünscht) */
+/* Farben pro Datum */
 .today-card {
-  background-color: #fff8e8;
+  background-color: #fff8e8; /* gelb */
 }
 
 .blue-card {
-  background-color: #e0f0ff;
+  background-color: #e0f0ff; /* blau */
 }
 
 .past-card {
-  background-color: #dcdcdc;
+  background-color: #dcdcdc; /* grau */
 }
 
 .light-card {
-  background-color: #f2f2f2;
+  background-color: #f2f2f2; /* hellgrau */
 }
 
 /* Card-Inhalt */
@@ -198,7 +197,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  margin: 0;
+  margin-bottom: 24px;
 }
 
 .info-temp span {
@@ -215,15 +214,13 @@ body {
 .info-middle {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   gap: 4px;
-  margin: 0;
 }
 
 .info-middle span:first-child {
   font-size: 32px;
   font-weight: 700;
-  color: #000000;
 }
 
 .info-bikes-label {
@@ -261,17 +258,18 @@ body {
   position: absolute;
   left: 0;
   right: 0;
-  bottom: 60px;   /* Abstand zur Straße, ggf. feinjustieren */
+  bottom: 70px;
   height: 60px;
   pointer-events: none;
 }
 
+/* Nur das Bild-Bike wird genutzt */
 .bike-img {
   position: absolute;
   bottom: 0;
   left: 0;
-  height: 60px;
-  pointer-events: auto;
+  height: 60px; /* anpassen, bis es wie im Figma sitzt */
+  pointer-events: auto; /* fürs Dragging wichtig */
   cursor: grab;
   transition: left 0.15s linear;
 }
@@ -287,7 +285,7 @@ body {
   right: 80px;
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  align-items: flex-end; /* rechtsbündig */
   color: #ffffff;
 }
 
