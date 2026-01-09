@@ -33,8 +33,7 @@
         In Leipzig greifen viele Menschen auf das Fahrradleihsystem Nextbike
         zurück. Doch wie sehr beeinflussen Sonne, Regen und Schnee ihre
         Entscheidung? MeteoRide verbindet Ausleihzahlen mit Wetterdaten und
-        macht sichtbar, zu welchen Temperaturen wieviel Velos ausgeliehen
-        werden.
+        macht sichtbar, wann die Leipziger:innen am liebsten radeln.
       </p>
 
       <!-- Chart mit Info-Cards -->
@@ -42,8 +41,14 @@
         <div class="chart-container">
           <canvas id="chart"></canvas>
 
-          <!-- Gelbe Card: Heute -->
+          <!-- Heute-Card (Temperaturabhängige Farbe) -->
           <div class="info-card today-card" id="todayCard">
+            <!-- Bikes oben -->
+            <div class="info-middle">
+              <span id="todayBikesValue">--</span>
+              <span class="info-bikes-label">Aktuell gebuchte Fahrräder</span>
+            </div>
+            <!-- Temp/Regen unten (rot) -->
             <div class="info-top">
               <div class="info-temp">
                 <span id="todayTempValue">--°</span>
@@ -52,15 +57,14 @@
                 <span id="todayRainValue">0mm</span>
               </div>
             </div>
-
-            <div class="info-middle">
-              <span id="todayBikesValue">--</span>
-              <span class="info-bikes-label">Aktuell gebuchte Fahrräder</span>
-            </div>
           </div>
 
-          <!-- Blaue Card: gestern -->
+          <!-- Gestern -->
           <div class="info-card blue-card" id="yesterdayCard">
+            <div class="info-middle">
+              <span id="yesterdayBikesValue">--</span>
+              <span class="info-bikes-label">Total gebuchte Fahrräder</span>
+            </div>
             <div class="info-top">
               <div class="info-temp">
                 <span id="yesterdayTempValue">--°</span>
@@ -69,15 +73,14 @@
                 <span id="yesterdayRainValue">0mm</span>
               </div>
             </div>
-
-            <div class="info-middle">
-              <span id="yesterdayBikesValue">--</span>
-              <span class="info-bikes-label">Total gebuchte Fahrräder</span>
-            </div>
           </div>
 
-          <!-- Graue Card: vorgestern -->
+          <!-- Vorgestern -->
           <div class="info-card past-card" id="pastCard">
+            <div class="info-middle">
+              <span id="pastBikesValue">--</span>
+              <span class="info-bikes-label">Total gebuchte Fahrräder</span>
+            </div>
             <div class="info-top">
               <div class="info-temp">
                 <span id="pastTempValue">--°</span>
@@ -86,15 +89,14 @@
                 <span id="pastRainValue">0mm</span>
               </div>
             </div>
-
-            <div class="info-middle">
-              <span id="pastBikesValue">--</span>
-              <span class="info-bikes-label">Total gebuchte Fahrräder</span>
-            </div>
           </div>
 
-          <!-- Hellgraue Card: 4. letzter Tag -->
+          <!-- 4. letzter Tag -->
           <div class="info-card light-card" id="oldCard">
+            <div class="info-middle">
+              <span id="oldBikesValue">--</span>
+              <span class="info-bikes-label">Total gebuchte Fahrräder</span>
+            </div>
             <div class="info-top">
               <div class="info-temp">
                 <span id="oldTempValue">--°</span>
@@ -102,11 +104,6 @@
               <div class="info-rain">
                 <span id="oldRainValue">0mm</span>
               </div>
-            </div>
-
-            <div class="info-middle">
-              <span id="oldBikesValue">--</span>
-              <span class="info-bikes-label">Total gebuchte Fahrräder</span>
             </div>
           </div>
         </div>
@@ -121,13 +118,13 @@
       <div id="bikeTrack">
         <img src="images/bike.png" alt="Bike" class="bike-img" />
       </div>
-    </div>
 
-    <!-- Aktuelle Uhrzeit -->
-    <div class="time-box">
-      <span class="time-value" id="currentTime">15:54</span>
-      <span class="time-line"></span>
-      <span class="time-label">Aktuelle Uhrzeit</span>
+      <!-- Aktuelle Uhrzeit -->
+      <div class="time-box">
+        <span class="time-value" id="currentTime">15:54</span>
+        <span class="time-line"></span>
+        <span class="time-label">Aktuelle Uhrzeit</span>
+      </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
