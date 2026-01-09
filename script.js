@@ -315,8 +315,8 @@ function positionCardAtIndex(card, idx) {
 
   card.style.display = "flex";
 
-  // Faktor < 1 → Cards näher zusammen
-  const marginFactor = 0.85;
+  // Faktor < 1 → Cards näher zusammen (Handy enger)
+  const marginFactor = window.innerWidth <= 767 ? 0.6 : 0.85;
   const innerWidth = containerWidth * marginFactor;
   const offset = (containerWidth - innerWidth) / 2;
 
@@ -506,12 +506,11 @@ initChart();
 window.addEventListener("resize", () => {
   const newWindowSize = getWindowSizeForScreen();
 
-  // Nur neu berechnen, wenn sich die Logik (2 vs. 4 Tage) ändert
+  // Nur neu berechnen, wenn sich 2 vs. 4 Tage ändert
   if (newWindowSize !== WINDOW_SIZE) {
     WINDOW_SIZE = newWindowSize;
 
     if (labels.length > 0) {
-      // startIndex neu justieren (möglichst am rechten Rand bleiben)
       startIndex = Math.max(labels.length - WINDOW_SIZE, 0);
       updateChartWindow();
       positionFromStartIndex();

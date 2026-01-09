@@ -263,12 +263,11 @@ body {
   pointer-events: none;
 }
 
-/* Nur das Bild-Bike wird genutzt */
 .bike-img {
   position: absolute;
   bottom: 0;
   left: 0;
-  height: 60px; /* anpassen, bis es wie im Figma sitzt */
+  height: 60px;
   pointer-events: auto; /* fürs Dragging wichtig */
   cursor: grab;
   transition: left 0.15s linear;
@@ -278,14 +277,14 @@ body {
   cursor: grabbing;
 }
 
-/* ===== Aktuelle Uhrzeit ===== */
+/* ===== Aktuelle Uhrzeit (Desktop) ===== */
 .time-box {
   position: absolute;
   top: 40px;
   right: 80px;
   display: flex;
   flex-direction: column;
-  align-items: flex-end; /* rechtsbündig */
+  align-items: flex-end;
   color: #ffffff;
 }
 
@@ -309,6 +308,88 @@ body {
 }
 
 /* ===================== */
+/*  Tablet-Ansicht       */
+/* ===================== */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .page {
+    align-items: center;
+  }
+
+  .title {
+    font-size: 40px;
+    margin-top: 40px;
+  }
+
+  .description {
+    max-width: 420px;
+    font-size: 15px;
+    padding: 0 24px;
+  }
+
+  .chart-container {
+    max-width: 720px;
+    height: 320px;
+    margin-top: 40px;
+  }
+
+  .info-card {
+    min-width: 200px;
+    height: 230px;
+    padding: 16px 18px;
+    bottom: 90px;
+  }
+
+  .info-top {
+    margin-bottom: 18px;
+  }
+
+  .info-temp span {
+    font-size: 24px;
+  }
+
+  .info-rain span {
+    font-size: 16px;
+  }
+
+  .info-middle span:first-child {
+    font-size: 26px;
+  }
+
+  .info-bikes-label {
+    font-size: 13px;
+  }
+
+  .street {
+    height: 70px;
+    margin-top: 30px;
+  }
+
+  #bikeTrack {
+    bottom: 80px;
+    height: 55px;
+  }
+
+  .bike-img {
+    height: 50px;
+  }
+
+  .location-btn {
+    transform: translate(24px, 24px);
+    font-size: 18px;
+    padding: 6px 12px;
+  }
+
+  .time-box {
+    top: 28px;
+    right: 40px;
+  }
+
+  .time-value {
+    font-size: 26px;
+  }
+}
+
+/* ===================== */
 /*  Mobile-Ansicht Handy */
 /* ===================== */
 @media (max-width: 767px) {
@@ -319,7 +400,7 @@ body {
   .page {
     min-height: 100vh;
     align-items: stretch;
-    padding-bottom: 180px; /* Platz für Straße + Button + Uhrzeit */
+    padding-bottom: 160px; /* Platz für Straße + Button + Uhrzeit */
   }
 
   /* Titel + Beschreibung */
@@ -338,46 +419,46 @@ body {
   /* Chart + Cards kompakt über der Straße */
   .chart-container {
     width: 100%;
-    max-width: 340px;
-    margin: 60px auto 0;   /* etwas nach oben rücken */
-    height: 260px;         /* deutlich niedriger als Desktop */
+    max-width: 320px;
+    margin: 40px auto 0;
+    height: 210px;
   }
 
   .info-card {
-    min-width: 150px;
-    height: 180px;
-    padding: 10px 12px;
-    gap: 6px;
-    bottom: 95px;          /* klar über der Straße */
+    min-width: 140px;
+    height: 150px;
+    padding: 8px 10px;
+    gap: 4px;
+    bottom: 90px; /* knapp über der Straße */
   }
 
   .info-top {
-    margin-bottom: 10px;
+    margin-bottom: 6px;
   }
 
   .info-temp span {
-    font-size: 18px;
+    font-size: 16px;
   }
 
   .info-rain span {
-    font-size: 12px;
-  }
-
-  .info-middle span:first-child {
-    font-size: 20px;
-  }
-
-  .info-bikes-label {
     font-size: 11px;
   }
 
-  /* Straße + Track fix am unteren Rand */
+  .info-middle span:first-child {
+    font-size: 18px;
+  }
+
+  .info-bikes-label {
+    font-size: 10px;
+  }
+
+  /* Straße über Buttons/Uhrzeit */
   .street {
     position: fixed;
     left: 0;
     right: 0;
-    bottom: 80px;
-    height: 50px;
+    bottom: 90px;
+    height: 45px;
     margin-top: 0;
     z-index: 10;
   }
@@ -386,17 +467,18 @@ body {
     height: 3px;
   }
 
+  /* Bike etwas höher auf der Straße */
   #bikeTrack {
     position: fixed;
     left: 0;
     right: 0;
-    bottom: 80px;
-    height: 40px;
+    bottom: 130px; 
+    height: 35px;
     z-index: 15;
   }
 
   .bike-img {
-    height: 40px;
+    height: 34px;
   }
 
   /* Leipzig-Button unten links */
