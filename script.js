@@ -38,7 +38,7 @@ const oldTempValue = document.getElementById("oldTempValue");
 const oldRainValue = document.getElementById("oldRainValue");
 const oldBikesValue = document.getElementById("oldBikesValue");
 
-// Label-Spans (Text: Aktuell/Total)
+// Label-Spans
 const todayLabelEl = todayCard.querySelector(".info-bikes-label");
 const yesterdayLabelEl = yesterdayCard.querySelector(".info-bikes-label");
 const pastLabelEl = pastCard.querySelector(".info-bikes-label");
@@ -65,7 +65,7 @@ function positionFromStartIndex() {
   const usableWidth = Math.max(trackWidth - bikeWidth, 0);
 
   const maxStart = Math.max(total - WINDOW_SIZE, 1);
-  const ratio = maxStart > 0 ? startIndex / maxStart : 0; // 0..1
+  const ratio = maxStart > 0 ? startIndex / maxStart : 0;
   const px = ratio * usableWidth;
 
   bike.style.left = `${px}px`;
@@ -91,10 +91,10 @@ function startIndexFromPosition(px) {
 function getCardClassForTemp(temp) {
   if (temp == null || isNaN(temp)) return null;
 
-  if (temp < 0) return "light-card";   // Minusgrade bis 0
-  if (temp < 10) return "past-card";   // 0–10 Grad
-  if (temp < 20) return "blue-card";   // 10–20 Grad
-  return "today-card";                 // 20+ Grad
+  if (temp < 0) return "light-card";
+  if (temp < 10) return "past-card";
+  if (temp < 20) return "blue-card";
+  return "today-card";
 }
 
 // ---- Drag fürs Velo ----
@@ -146,7 +146,7 @@ async function getAll() {
 
     const byDate = {};
     rawData.forEach((row) => {
-      const date = row.timestamp.slice(0, 10); // YYYY-MM-DD
+      const date = row.timestamp.slice(0, 10);
       if (!byDate[date]) {
         byDate[date] = { temps: [], bikes: [], rain: [] };
       }
@@ -174,7 +174,7 @@ async function getAll() {
         validTemps.length === 0 &&
         validRain.length === 0
       ) {
-        return; // komplett leere Tage überspringen
+        return;
       }
 
       const maxBikes =
@@ -205,7 +205,6 @@ async function getAll() {
       rainData.push(Number(avgRain.toFixed(1)));
     });
 
-    // Index von heute
     const today = new Date();
     const todayStr = `${String(today.getDate()).padStart(2, "0")}.${String(
       today.getMonth() + 1
@@ -240,14 +239,12 @@ function setCardValues(idx, cardEl, tempEl, rainEl, bikesEl, labelEl) {
   rainEl.textContent = Number.isFinite(r) ? `${r}mm` : "0mm";
   bikesEl.textContent = Number.isFinite(b) ? b : "--";
 
-  // Temperatur-Farbklasse
   if (cardEl && Number.isFinite(t)) {
     cardEl.classList.remove("today-card", "blue-card", "past-card", "light-card");
     const cls = getCardClassForTemp(t);
     if (cls) cardEl.classList.add(cls);
   }
 
-  // Text "Aktuell" vs. "Total" basierend auf Datum
   if (labelEl) {
     if (idx === todayIndex) {
       labelEl.textContent = "Aktuell gebuchte Fahrräder";
@@ -257,7 +254,7 @@ function setCardValues(idx, cardEl, tempEl, rainEl, bikesEl, labelEl) {
   }
 }
 
-// generische Positionsfunktion für eine Card
+// ---- Cards positionieren: enger zusammen im Chart ----
 function positionCardAtIndex(card, idx) {
   if (!card || labels.length === 0 || !chartBox) return;
 
@@ -273,15 +270,20 @@ function positionCardAtIndex(card, idx) {
 
   card.style.display = "flex";
 
-  const stepPx = containerWidth / steps;
-  const x = slot * stepPx;
+  // Faktor < 1 → Cards näher zusammen
+  const marginFactor = 0.85;
+  const innerWidth = containerWidth * marginFactor;
+  const offset = (containerWidth - innerWidth) / 2;
+
+  const stepPx = innerWidth / steps;
+  const x = offset + slot * stepPx;
   const centerX = x;
 
   card.style.left = `${centerX}px`;
   card.style.transform = "translateX(-50%)";
 }
 
-// ---- Cards aktualisieren: immer 4 Tage des aktuellen Fensters ----
+// ---- Cards aktualisieren ----
 function positionAllCards() {
   if (labels.length === 0) return;
 
@@ -290,7 +292,6 @@ function positionAllCards() {
   const idx2 = startIndex + 2;
   const idx3 = startIndex + 3;
 
-  // Card 1 → erster Tag im Fenster
   if (idx0 >= 0 && idx0 < labels.length) {
     setCardValues(
       idx0,
@@ -305,7 +306,6 @@ function positionAllCards() {
     todayCard.style.display = "none";
   }
 
-  // Card 2 → zweiter Tag im Fenster
   if (idx1 >= 0 && idx1 < labels.length) {
     setCardValues(
       idx1,
@@ -320,7 +320,6 @@ function positionAllCards() {
     yesterdayCard.style.display = "none";
   }
 
-  // Card 3 → dritter Tag im Fenster
   if (idx2 >= 0 && idx2 < labels.length) {
     setCardValues(
       idx2,
@@ -335,7 +334,6 @@ function positionAllCards() {
     pastCard.style.display = "none";
   }
 
-  // Card 4 → vierter Tag im Fenster (heute, falls im Fenster)
   if (idx3 >= 0 && idx3 < labels.length) {
     setCardValues(
       idx3,
@@ -354,9 +352,7 @@ function positionAllCards() {
 async function initChart() {
   await getAll();
 
-  // Fenster so legen, dass todayIndex möglichst rechts (4. Position) ist
   if (todayIndex === -1) {
-    // kein heutiger Tag im Datensatz → letzte 4 Tage
     startIndex = Math.max(labels.length - WINDOW_SIZE, 0);
   } else {
     startIndex = todayIndex - (WINDOW_SIZE - 1);
@@ -377,6 +373,7 @@ async function initChart() {
           label: "Gebuchte Bikes",
           data: win.bikes,
           borderColor: "#000000",
+          // kein borderWidth → Standarddicke
           fill: false,
           tension: 0.3,
           pointRadius: 0,
@@ -385,6 +382,7 @@ async function initChart() {
           label: "Temperatur",
           data: win.temps,
           borderColor: "#ff4b5c",
+          // kein borderWidth → Standarddicke
           fill: false,
           tension: 0.3,
           pointRadius: 0,
@@ -405,6 +403,7 @@ async function initChart() {
               weight: "400",
             },
             padding: 4,
+            align: "center",
           },
         },
         y: {
